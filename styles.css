@@ -470,6 +470,7 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
 .flip-tilt{
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(.22,1,.36,1);
+  will-change: transform;
 }
 .flip-card{
   position: relative;
@@ -478,6 +479,13 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
   cursor: pointer;
   transform-style: preserve-3d;
   transition: transform 0.9s cubic-bezier(.4,.1,.2,1);
+  /* Without this, some browsers only promote this element to its own
+     GPU layer once the rotateY transition actually starts, instead of
+     ahead of time — that late promotion can show up as a garbled/
+     corrupted frame (jumbled boxes, broken text) partway through the
+     flip. will-change asks for the layer up front so the whole 0.9s
+     rotation composites from a stable layer instead. */
+  will-change: transform;
 }
 .flip-card.is-flipped{ transform: rotateY(180deg); }
 .flip-face{
