@@ -887,10 +887,19 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
 @media (max-width: 1199px) and (min-width: 810px){
   .project-stage{ height: 400vh; }
   .stage-card{ width: 200px; height: 200px; }
+  /* cover crops hard on a taller/narrower viewport than the video's own
+     landscape frame — the monitor+keyboard composition loses its edges.
+     contain keeps the whole frame visible, same as the desktop crop,
+     just letterboxed; the video's own background matches the hero's, so
+     the letterbox bars are invisible. */
+  .hero-bg-video{ object-fit: contain; }
 }
 
 /* Phone: <810px, measured on the live site */
 @media (max-width: 809px){
+  /* Same reasoning as the tablet block above: keep the full video frame
+     visible instead of cover cropping most of it away. */
+  .hero-bg-video{ object-fit: contain; }
   .nav-links{
     display: none;
     position: absolute;
@@ -928,7 +937,13 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
      show/hide toggle here, so each face can take whatever height its own
      content needs. .flip-card.is-flipped is still what script.js toggles
      on click — only what that class *does* changes at this breakpoint. */
-  .flip-card{ transform: none !important; }
+  /* aspect-ratio:auto + height:auto here, explicitly — leaving the base
+     aspect-ratio:1556/980 in place relies on the browser letting a box's
+     auto-height grow past its aspect-ratio to fit overflowing content.
+     Chrome does; Safari/iOS often doesn't and clips at the ratio height
+     instead, which is exactly the "messed up on my phone but fine on
+     laptop" split this is fixing. Being explicit removes the ambiguity. */
+  .flip-card{ transform: none !important; aspect-ratio: auto; height: auto; }
   .flip-face{ position: relative; inset: auto; }
   .flip-front{ aspect-ratio: 1556 / 980; padding: 0; }
   .flip-back{ transform: none; }
