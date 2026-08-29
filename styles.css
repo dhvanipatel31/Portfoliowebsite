@@ -928,27 +928,13 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
   .approach h2{ font-size: 28px; }
   .approach blockquote{ font-size: 20px; }
   .about-flip{ padding: 80px 0; }
-  /* Below 810px the back face stacks the photo above the copy (see
-     .flip-back override below), which needs far more vertical room than
-     the front image's fixed 1556:980 aspect-ratio box has to give — that
-     box was sized for the front image only. Rather than clip the back
-     copy, the 3D rotateY flip (which requires both faces absolutely
-     stacked inside one fixed-height box) is swapped for a plain
-     show/hide toggle here, so each face can take whatever height its own
-     content needs. .flip-card.is-flipped is still what script.js toggles
-     on click — only what that class *does* changes at this breakpoint. */
-  /* aspect-ratio:auto + height:auto here, explicitly — leaving the base
-     aspect-ratio:1556/980 in place relies on the browser letting a box's
-     auto-height grow past its aspect-ratio to fit overflowing content.
-     Chrome does; Safari/iOS often doesn't and clips at the ratio height
-     instead, which is exactly the "messed up on my phone but fine on
-     laptop" split this is fixing. Being explicit removes the ambiguity. */
-  .flip-card{ transform: none !important; aspect-ratio: auto; height: auto; }
-  .flip-face{ position: relative; inset: auto; }
-  .flip-front{ aspect-ratio: 1556 / 980; padding: 0; }
-  .flip-back{ transform: none; }
-  .flip-card.is-flipped .flip-front{ display: none; }
-  .flip-card:not(.is-flipped) .flip-back{ display: none; }
+  /* Keep the exact same card: the real 3D rotateY flip and the photo +
+     copy side-by-side grid, unchanged from desktop — just shrunk to fit.
+     (An earlier version reflowed this to a stacked layout on mobile to
+     avoid clipping, but that changed the whole pattern; scaling every
+     dimension down instead keeps it visually identical to the laptop
+     view, just smaller and denser, per explicit request — legibility of
+     the tiny text is a deliberate trade-off here, not an oversight.) */
   .flip-face{ padding: 32px; }
   .flip-front{ padding: 0; }
   /* The baked-in heading shrinks with the card since it's part of the image, but
@@ -956,16 +942,23 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
      stays a secondary accent under the heading instead of overpowering it. */
   .flip-cta{ padding: 10px 18px; font-size: 14px; gap: 8px; }
   .flip-back{
-    grid-template-columns: 1fr;
-    text-align: center;
-    padding-bottom: 32px; /* CTA returns to normal flow on mobile, no longer pinned */
+    grid-template-columns: 62px 1fr;
+    column-gap: 10px;
+    row-gap: 3px;
+    padding: 10px 10px 22px;
   }
-  .flip-back .about-photo{ max-width: 220px; margin: 0 auto; }
-  .about-copy{ align-items: center; }
-  .about-desc{ max-width: none; }
+  .flip-back .about-photo{ border-radius: 5px; padding: 2px; }
+  .about-copy{ gap: 2px; }
+  .about-desc{ max-width: none; font-size: 6px; line-height: 1.18; }
+  .about-experience{ margin-top: 0; }
+  .about-experience-label{ font-size: 4.6px; margin-bottom: 0; }
+  .about-experience-value{ font-size: 6.3px; }
   .about-cta{
-    position: static;
-    margin: 8px auto 0;
+    right: 10px;
+    bottom: 6px;
+    padding: 4px 8px;
+    font-size: 6px;
+    gap: 3px;
   }
 }
 
