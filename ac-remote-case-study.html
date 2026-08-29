@@ -339,6 +339,14 @@
     .task-grid{ grid-template-columns: 1fr; }
     .task-findings{ grid-template-columns: 1fr; }
     .voice-tip{ display: none; }
+    /* Same reasoning as .voice-tip above: hover-only, and a dot near the
+       remote's right edge (left:100%) pushes this fixed 208px box past the
+       viewport edge, forcing the whole page to expand past 100vw on phones. */
+    .dot .tip{ display: none; }
+    /* Same reasoning: the fixed back button and the topbar's project tag
+       both anchor to the top-right corner, and at this width the tag has
+       nowhere left to go, so it sits directly under the button. */
+    .topbar .tag{ display: none; }
     .pill-btn.back-btn{ top: 20px; }
   }
   @media (max-width: 560px){

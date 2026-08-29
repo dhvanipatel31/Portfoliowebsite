@@ -200,6 +200,11 @@
 
   @media (max-width: 900px){
     .cols4{ grid-template-columns: 1fr 1fr; gap: 32px; }
+    /* The fixed back button and the topbar's project tag both anchor to
+       the top-right corner — at this width the tag has nowhere left to
+       go and sits directly under the button. Hiding it here matches
+       the name still being visible at top-left. */
+    .topbar .tag{ display: none; }
     .pill-btn.back-btn{ top: 20px; }
   }
 

@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SERA: Case Study by Dhvani Patel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6faf8;
+    --bg-raised:#e9f4ee;
+    --fg:#0e2027;
+    --muted:#5c7570;
+    --muted-dim:#8fa39c;
+    --line:rgba(14,32,39,0.1);
+    --line-strong:rgba(14,32,39,0.18);
+    --accent:#128a67;
+    --accent-soft:rgba(18,138,103,0.12);
+
+    --sera-bg:#e9f6f0;
+    --sera-panel:#ffffff;
+    --sera-ink:#0f2029;
+    --sera-muted:#5c716c;
+    --sera-accent:#12a37e;
+    --sera-line:rgba(15,32,41,0.1);
+
+    --serif:'Inter', -apple-system, sans-serif;
+    --sans:'Inter', -apple-system, sans-serif;
+
+    --container: 1160px;
+    --gutter: clamp(24px, 5vw, 64px);
+  }
+
+  /* Dark atmospheric sections (hero / system flow / closing) — SERA's navy register */
+  .dark-section{
+    --bg:#0c1526;
+    --bg-raised:#121e34;
+    --fg:#eef5f2;
+    --muted:#93a8ac;
+    --muted-dim:#5f7278;
+    --line:rgba(238,245,242,0.13);
+    --line-strong:rgba(238,245,242,0.24);
+    --accent:#4fd7b8;
+    --accent-soft:rgba(79,215,184,0.14);
+    background:
+      radial-gradient(ellipse 800px 500px at 25% 15%, rgba(79,215,184,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 600px at 85% 75%, rgba(140,130,235,0.10), transparent 60%),
+      var(--bg);
+    color:var(--fg);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--accent); color:#fff;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  a{color:inherit;}
+  img{max-width:100%; display:block;}
+
+  .wrap{max-width:var(--container); margin:0 auto; padding-left:var(--gutter); padding-right:var(--gutter);}
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--sans); font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--muted); font-weight:500;
+  }
+  .eyebrow::before{content:''; width:14px; height:1px; background:var(--muted-dim);}
+
+  h1,h2,h3{font-family:var(--serif); font-weight:600; letter-spacing:-0.02em;}
+
+  section{position:relative;}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px var(--gutter);
+    font-family:var(--sans); font-size:13px; letter-spacing:0.03em;
+    mix-blend-mode:difference;
+    pointer-events:none;
+  }
+  .topbar a{pointer-events:auto; text-decoration:none; color:#fff; opacity:0.85; transition:opacity .2s;}
+  .topbar a:hover{opacity:1;}
+  .topbar .tag{color:#fff; opacity:0.6;}
+
+  /* ---------- HERO ---------- */
+  #hero{
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding-top:120px; padding-bottom:80px;
+    position:relative;
+    background:var(--bg);
+  }
+  .hero-bg-word{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    overflow:hidden; pointer-events:none;
+  }
+  .hero-bg-word span{
+    font-family:var(--serif); font-weight:300;
+    font-size:min(40vw, 520px); color:rgba(238,245,242,0.05);
+    letter-spacing:-0.02em; white-space:nowrap;
+  }
+  .hero-meta{
+    display:flex; flex-wrap:wrap; gap:10px; margin-bottom:40px;
+  }
+  .meta-chip{
+    font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);
+    border:1px solid var(--line-strong); border-radius:100px; padding:6px 14px;
+  }
+  .hero-title{
+    font-size:clamp(56px, 11vw, 140px); line-height:0.92; color:var(--fg);
+    margin-bottom:22px; font-weight:700; letter-spacing:-0.03em;
+  }
+  .hero-sub{
+    font-family:var(--sans); font-size:clamp(16px,2vw,20px); color:var(--muted);
+    max-width:520px; margin-bottom:56px; font-weight:400;
+  }
+
+  .laptop-mockup{
+    position:relative; width:100%; max-width:920px; margin:0 auto;
+    transform:translateY(0);
+    transition:transform 0.6s cubic-bezier(.2,.7,.2,1);
+  }
+  .laptop-screen{
+    position:relative;
+    background:linear-gradient(180deg,#2c3034,#17191b);
+    border-radius:16px 16px 4px 4px;
+    padding:16px 16px 18px;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .laptop-cam{
+    width:5px; height:5px; border-radius:50%; margin:0 auto 12px;
+    background:#05060a; box-shadow:0 0 0 2px rgba(255,255,255,0.04);
+  }
+  .laptop-display{
+    position:relative; border-radius:6px; overflow:hidden;
+    background:#000; aspect-ratio:1276/734;
+  }
+  .laptop-display img{width:100%; height:100%; object-fit:cover; display:block;}
+  .laptop-hinge{
+    height:9px;
+    background:linear-gradient(180deg,#3a3e42,#111315);
+    border-radius:0 0 3px 3px;
+  }
+  .laptop-base{
+    position:relative; height:16px; margin:0 -30px;
+    background:linear-gradient(180deg,#2c3034,#15171a);
+    border-radius:0 0 12px 12px;
+    box-shadow:0 24px 40px -16px rgba(0,0,0,0.6);
+  }
+  .laptop-base::before{
+    content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:90px; height:6px; background:#0d0f11; border-radius:0 0 6px 6px;
+  }
+  .laptop-shadow{
+    width:76%; height:26px; margin:22px auto 0;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,0.4), rgba(0,0,0,0) 72%);
+    filter:blur(2px);
+  }
+
+  @media (max-width:560px){
+    .laptop-base{margin:0 -14px;}
+  }
+
+  /* ---------- HOOK ---------- */
+  #hook{padding:clamp(60px,9vw,110px) 0; background:var(--bg);}
+  .hook-eyebrow{display:flex; justify-content:center; margin-bottom:36px;}
+  .hook-statement{
+    font-family:var(--serif); font-weight:600;
+    font-size:clamp(28px, 4.8vw, 60px); line-height:1.18; text-align:center;
+    max-width:1000px; margin:0 auto; letter-spacing:-0.02em;
+  }
+  .hook-statement em{font-style:italic; color:var(--muted);}
+
+  .hook-support{
+    display:flex; justify-content:center;
+    margin-top:48px; padding-top:32px; border-top:1px solid var(--line);
+  }
+  .hook-support p{max-width:620px; color:var(--muted); font-size:16px; line-height:1.65; text-align:center;}
+
+  .section-head{margin-bottom:64px; max-width:640px;}
+  .section-head .eyebrow{margin-bottom:20px;}
+  .section-head h2{font-size:clamp(28px,4.2vw,46px); line-height:1.15;}
+
+  /* ---------- RESEARCH ---------- */
+  #research{padding:clamp(50px,8vw,90px) 0 clamp(50px,7vw,80px); background:var(--bg-raised); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .research-head{margin-bottom:56px;}
+  .research-support{max-width:520px; color:var(--muted); font-size:16px; line-height:1.6; margin-top:18px;}
+
+  .research-annotation{
+    display:flex; align-items:flex-end; gap:14px;
+    margin:0 0 28px clamp(0px,8vw,120px);
+    max-width:360px;
+  }
+  .research-annotation span{
+    font-family:var(--sans); font-size:14px; font-style:italic;
+    color:var(--muted); line-height:1.5; white-space:normal;
+  }
+  .annotation-arrow{width:70px; height:36px; flex-shrink:0; overflow:visible; transform:translateY(6px);}
+  .annotation-arrow path{transition:stroke-dashoffset 1.1s ease .2s;}
+
+  .research-video-wrap{
+    position:relative;
+    width:min(58%, 720px);
+    margin:0 auto;
+    border-radius:4px;
+    overflow:hidden;
+    background:var(--bg);
+  }
+  .research-video{
+    display:block; width:100%; height:auto;
+    clip-path:inset(3% 0 0 0);
+  }
+  .research-video-toggle{
+    position:absolute; bottom:16px; left:16px; width:42px; height:42px; border-radius:50%;
+    border:none; background:rgba(12,21,38,0.82); backdrop-filter:blur(6px); color:#fff;
+    display:flex; align-items:center; justify-content:center; z-index:6;
+    opacity:0; transform:scale(0.72) translateY(8px);
+    transition:opacity .3s ease, transform .3s cubic-bezier(.2,.8,.2,1), background .2s ease;
+    cursor:pointer;
+  }
+  .research-video-wrap:hover .research-video-toggle,
+  .research-video-toggle:focus-visible{opacity:1; transform:scale(1) translateY(0);}
+  .research-video-toggle:hover{background:rgba(12,21,38,0.95);}
+  .research-video-toggle svg{width:16px; height:16px;}
+  .research-video-toggle .icon-play{display:block;}
+  .research-video-toggle .icon-pause{display:none;}
+  .research-video-toggle.is-playing .icon-play{display:none;}
+  .research-video-toggle.is-playing .icon-pause{display:block;}
+
+  .reveal-el{opacity:0; transform:translateY(14px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal-el.in{opacity:1; transform:translateY(0);}
+  .research-video-wrap.reveal-el{transform:scale(0.97); transition:opacity .8s ease, transform .8s ease;}
+  .research-video-wrap.reveal-el.in{transform:scale(1);}
+  .research-annotation.in .annotation-arrow path{stroke-dashoffset:0;}
+
+  @media (max-width:900px){
+    .research-annotation{margin-left:0; max-width:100%;}
+    .research-video-wrap{width:100%;}
+  }
+
+  /* ---------- WHO WE SPOKE TO ---------- */
+  #spoke-to{padding:clamp(40px,6vw,60px) 0 clamp(60px,9vw,100px);}
+  .spoke-head{margin-bottom:56px;}
+
+  .spoke-cards{display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;}
+  .spoke-card{
+    display:flex; flex-direction:column;
+    border:1px solid var(--line); border-radius:6px; background:var(--bg);
+    padding:clamp(28px,2.6vw,40px) clamp(24px,2.4vw,34px);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s ease, opacity .35s ease;
+  }
+  .spoke-card .idx{
+    font-family:var(--sans); font-size:13px; letter-spacing:0.04em;
+    color:var(--muted-dim); margin-bottom:28px;
+  }
+  .spoke-card h3{
+    font-size:clamp(21px,2vw,25px); line-height:1.2; margin-bottom:10px;
+    transition:color .35s ease;
+  }
+  .spoke-card:nth-child(2) h3{font-size:clamp(18px,1.7vw,22px); white-space:nowrap;}
+  @media (max-width:400px){ .spoke-card:nth-child(2) h3{white-space:normal;} }
+  .spoke-card .descriptor{
+    font-family:var(--sans); font-weight:500; font-size:14px; color:var(--muted); margin-bottom:20px;
+  }
+  .spoke-card .desc{color:var(--muted); font-size:15px; line-height:1.65; margin-bottom:28px;}
+  .spoke-card .spoke-divider{
+    margin-top:auto; padding-top:22px; border-top:1px solid var(--line);
+  }
+  .spoke-card .spoke-label{
+    display:block; font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:10px;
+  }
+  .spoke-card .spoke-question{
+    font-family:var(--serif); font-weight:500; font-style:italic; font-size:15.5px; line-height:1.5; color:var(--fg);
+  }
+
+  .spoke-cards:hover .spoke-card{opacity:0.6;}
+  .spoke-cards .spoke-card:hover{
+    opacity:1; transform:translateY(-4px); border-color:var(--line-strong);
+  }
+  .spoke-cards .spoke-card:hover h3{color:var(--accent);}
+
+  .spoke-transition{
+    text-align:center; max-width:520px; margin:clamp(48px,6vw,72px) auto 0;
+    display:flex; flex-direction:column; align-items:center; gap:20px;
+  }
+  .spoke-transition p{
+    font-family:var(--serif); font-style:italic; font-weight:500;
+    font-size:clamp(16px,1.8vw,19px); line-height:1.5; color:var(--muted);
+  }
+  .spoke-transition-arrow{width:24px; height:40px; overflow:visible;}
+  .spoke-transition-arrow path{transition:stroke-dashoffset 1.1s ease .2s;}
+  .spoke-transition.in .spoke-transition-arrow path{stroke-dashoffset:0;}
+
+  @media (max-width:980px){
+    .spoke-cards{grid-template-columns:1fr 1fr;}
+    .spoke-cards .spoke-card:nth-child(3){grid-column:1 / -1;}
+  }
+  @media (max-width:680px){
+    .spoke-cards{grid-template-columns:1fr; gap:16px;}
+    .spoke-cards .spoke-card:nth-child(3){grid-column:auto;}
+  }
+
+  /* ---------- PROBLEM (signature) ---------- */
+  #problem{padding:clamp(60px,8vw,90px) 0 clamp(50px,7vw,75px); position:relative;}
+  .problem-inner{width:100%;}
+  .frag-field{
+    position:relative; height:clamp(220px,32vw,340px); margin-bottom:56px;
+  }
+  .frag-item{
+    position:absolute; font-size:13px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--muted); border:1px solid var(--line-strong); border-radius:100px;
+    padding:10px 20px; white-space:nowrap;
+    transition:top 1.1s cubic-bezier(.16,.9,.2,1), left 1.1s cubic-bezier(.16,.9,.2,1),
+               transform 1.1s cubic-bezier(.16,.9,.2,1), opacity 0.8s ease;
+  }
+  .frag-word{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    font-family:var(--serif); font-weight:700; font-size:clamp(36px,7vw,96px); color:var(--fg);
+    opacity:0; transition:opacity 1s ease 0.6s; letter-spacing:-0.02em;
+  }
+  .frag-field.merged .frag-word{opacity:1;}
+  .frag-field.merged .frag-item{opacity:0;}
+
+  /* Problem section: many scattered issues feeding into one central
+     problem. Core appears first, issues and connector lines follow. */
+  .problem-web{
+    position:relative; width:min(84%, 1060px); margin:0 auto;
+    height:clamp(560px,44vw,720px);
+  }
+  .problem-web-lines{position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; z-index:1;}
+  .problem-web-lines path{
+    fill:none; stroke:var(--muted-dim); stroke-width:1.2; stroke-linecap:round;
+    stroke-dasharray:1; stroke-dashoffset:1; transition:stroke-dashoffset 1s ease;
+  }
+  .problem-web-lines path.in{stroke-dashoffset:0;}
+
+  .problem-core{
+    position:absolute; top:50%; left:50%; z-index:3;
+    width:clamp(230px,20vw,300px); aspect-ratio:1/1; border-radius:50%;
+    border:1px solid var(--line-strong); background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; transform:translate(-50%,-50%) scale(0.92);
+    transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1);
+  }
+  .problem-core.in{opacity:1; transform:translate(-50%,-50%) scale(1);}
+  .problem-core-inner{max-width:190px; text-align:center;}
+  .problem-core-title{
+    font-family:var(--serif); font-weight:700; font-size:clamp(18px,1.9vw,23px);
+    line-height:1.25; letter-spacing:-0.01em; color:var(--fg); margin-bottom:10px;
+  }
+  .problem-core-support{font-family:var(--sans); font-size:11.5px; line-height:1.55; color:var(--muted);}
+
+  .problem-issue{
+    position:absolute; z-index:2;
+    font-size:13px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--muted); border:1px solid var(--line-strong); border-radius:100px;
+    padding:10px 18px; white-space:nowrap; background:var(--bg);
+    opacity:0; transform:translateY(10px) scale(0.96);
+    transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1);
+  }
+  .problem-issue.in{opacity:1; transform:translateY(0) scale(1);}
+
+  .pi-portfolio{top:2%; left:9%;}
+  .pi-skillgaps{top:1%; left:63%;}
+  .pi-feedback{top:0%; left:33%;}
+  .pi-interview{top:40%; left:0%;}
+  .pi-mentorship{top:66%; left:0%;}
+  .pi-career{top:38%; left:75%;}
+  .pi-tools{top:64%; left:78%;}
+  .pi-next{top:88%; left:62%;}
+  .pi-resources{top:82%; left:0%;}
+  .pi-opportunities{top:96%; left:22%;}
+
+  @media (max-width:980px){
+    .problem-web{width:92%; height:clamp(600px,68vw,740px);}
+    .problem-core{width:clamp(200px,26vw,250px);}
+    .pi-skillgaps{top:0%; left:68%;}
+    .pi-feedback{top:0%; left:34%;}
+    .pi-mentorship{top:66%; left:0%;}
+    .pi-resources{top:82%; left:0%;}
+    .pi-next{top:88%; left:66%;}
+    .pi-opportunities{top:96%; left:16%;}
+  }
+
+  @media (max-width:760px){
+    .problem-web{width:100%; height:820px;}
+    .problem-core{width:190px;}
+    .problem-core-inner{max-width:150px;}
+    .problem-issue{font-size:11.5px; padding:9px 15px;}
+    /* Five issues stack above the core, five below, staggered left and
+       right so it reads as a compact cluster rather than a vertical list. */
+    .pi-portfolio{top:0%; left:2%;}
+    .pi-skillgaps{top:7%; left:44%;}
+    .pi-feedback{top:14%; left:8%;}
+    .pi-interview{top:21%; left:38%;}
+    .pi-career{top:28%; left:4%;}
+    .pi-mentorship{top:66%; left:4%;}
+    .pi-tools{top:73%; left:40%;}
+    .pi-next{top:80%; left:10%;}
+    .pi-resources{top:87%; left:28%;}
+    .pi-opportunities{top:94%; left:4%;}
+  }
+
+  .problem-copy h2{font-size:clamp(26px,4vw,42px); max-width:760px; margin-bottom:36px; line-height:1.2;}
+  .ps-grid{display:grid; grid-template-columns:1fr 1fr; gap:72px; position:relative; align-items:start;}
+  .ps-card{border:1px solid var(--line); border-radius:22px 22px 22px 6px; padding:32px 28px 28px; position:relative; background:var(--bg);}
+  .ps-card .ps-tab{
+    position:absolute; top:-16px; left:26px; background:var(--bg);
+    border:1px solid var(--line-strong); border-radius:100px; padding:6px 16px;
+    font-family:var(--sans); font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);
+  }
+  .ps-card .ps-tab.solution{color:var(--accent); border-color:var(--accent);}
+  .ps-card.ps-solution{margin-top:64px; border-radius:22px 22px 6px 22px;}
+  .ps-card p{font-size:16px; line-height:1.6; color:var(--fg);}
+  .ps-arrow{position:absolute; width:64px; height:64px; left:calc(50% - 32px); top:64px; color:var(--muted-dim); z-index:2;}
+  @media (max-width:760px){ .ps-grid{grid-template-columns:1fr;} .ps-card.ps-solution{margin-top:0;} .ps-arrow{display:none;} }
+
+  /* ---------- INSIGHTS (research wall) ---------- */
+  #insight{padding:clamp(60px,8vw,90px) 0 clamp(60px,7vw,85px);}
+  .insight-head{margin-bottom:56px;}
+
+  .insight-wall{
+    position:relative; width:min(88%, 1040px); margin:0 auto;
+    background:var(--bg-raised); border:1px solid var(--line);
+    border-radius:14px; padding:clamp(40px,5vw,64px) clamp(28px,4vw,52px);
+    opacity:0; transform:scale(0.98); transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1);
+  }
+  .insight-wall.in{opacity:1; transform:scale(1);}
+
+  .insight-cards{display:grid; grid-template-columns:repeat(3, 1fr); gap:28px 24px;}
+  .insight-card{
+    position:relative; background:var(--bg); border:1px solid var(--line);
+    border-radius:8px; padding:34px 24px 26px;
+    box-shadow:0 10px 22px -16px rgba(14,32,39,0.28), 0 2px 6px -2px rgba(14,32,39,0.08);
+    opacity:0; transition:opacity .7s ease, transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease;
+    transform:translateY(calc(var(--iy, 0px) + 14px)) rotate(var(--irot, 0deg));
+  }
+  .insight-card.in{
+    opacity:1; transform:translateY(var(--iy, 0px)) rotate(var(--irot, 0deg));
+  }
+  .insight-card:hover{
+    transform:translateY(calc(var(--iy, 0px) - 6px)) rotate(calc(var(--irot, 0deg) * 0.25));
+    box-shadow:0 18px 34px -18px rgba(14,32,39,0.32), 0 4px 10px -2px rgba(14,32,39,0.1);
+    z-index:2;
+  }
+  .insight-tape{
+    position:absolute; top:0; left:50%; width:52px; height:20px;
+    background:rgba(14,32,39,0.07); border:1px solid rgba(14,32,39,0.1);
+    transform:translate(-50%,-50%) rotate(var(--taperot, -3deg));
+  }
+  .insight-card h3{
+    font-family:var(--serif); font-weight:700; font-size:clamp(15px,1.3vw,17px);
+    line-height:1.3; letter-spacing:-0.01em; margin-bottom:12px;
+  }
+  .insight-card p{color:var(--muted); font-size:14.5px; line-height:1.62;}
+
+  @media (max-width:900px){
+    .insight-cards{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:640px){
+    .insight-cards{grid-template-columns:1fr; gap:32px;}
+    .insight-card{transform:translateY(calc(var(--iy,0px) * 0.4 + 14px)) rotate(calc(var(--irot,0deg) * 0.6));}
+    .insight-card.in{transform:translateY(calc(var(--iy,0px) * 0.4)) rotate(calc(var(--irot,0deg) * 0.6));}
+  }
+
+  /* ---------- ITERATIONS ---------- */
+  #iterations{padding:clamp(60px,8vw,90px) 0 clamp(60px,7vw,85px);}
+  .iterations-head{margin-bottom:56px;}
+
+  .iter-videos{display:grid; grid-template-columns:1fr 1fr; gap:4%;}
+  .iter-col{
+    opacity:0; transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1);
+  }
+  .iter-col.in{opacity:1; transform:translateX(0);}
+  .iter-col-left{transform:translateX(-14px);}
+  .iter-col-right{transform:translateX(14px);}
+
+  .iter-video-wrap{
+    position:relative; border-radius:4px; overflow:hidden; background:var(--bg-raised);
+  }
+  .iter-video{display:block; width:100%; height:auto;}
+  .iter-video-toggle{
+    position:absolute; bottom:16px; left:16px; width:42px; height:42px; border-radius:50%;
+    border:none; background:rgba(12,21,38,0.82); backdrop-filter:blur(6px); color:#fff;
+    display:flex; align-items:center; justify-content:center; z-index:6;
+    opacity:0; transform:scale(0.72) translateY(8px);
+    transition:opacity .3s ease, transform .3s cubic-bezier(.2,.8,.2,1), background .2s ease;
+    cursor:pointer;
+  }
+  .iter-video-wrap:hover .iter-video-toggle,
+  .iter-video-toggle:focus-visible{opacity:1; transform:scale(1) translateY(0);}
+  .iter-video-toggle:hover{background:rgba(12,21,38,0.95);}
+  .iter-video-toggle svg{width:16px; height:16px;}
+  .iter-video-toggle .icon-play{display:block;}
+  .iter-video-toggle .icon-pause{display:none;}
+  .iter-video-toggle.is-playing .icon-play{display:none;}
+  .iter-video-toggle.is-playing .icon-pause{display:block;}
+
+  .iter-caption{margin-top:20px;}
+  .iter-caption h3{font-family:var(--sans); font-weight:600; font-size:16px; margin-bottom:8px; color:var(--fg);}
+  .iter-caption p{color:var(--muted); font-size:14px; line-height:1.6;}
+
+  @media (max-width:760px){
+    .iter-videos{grid-template-columns:1fr; gap:48px;}
+    .iter-col-left, .iter-col-right{transform:translateY(14px);}
+  }
+
+  /* ---------- WORKSPACES selector ---------- */
+  #workspaces{padding:80px 0 120px;}
+  .ws-layout{display:grid; grid-template-columns:280px 1fr; gap:48px; margin-top:56px;}
+  .ws-list{display:flex; flex-direction:column; border-top:1px solid var(--line);}
+  .ws-item{
+    display:flex; align-items:baseline; gap:16px; padding:22px 4px;
+    border-bottom:1px solid var(--line); cursor:pointer; background:none; border-left:none; border-right:none; border-top:none;
+    text-align:left; color:var(--muted); font-family:var(--sans);
+    transition:color .25s;
+  }
+  .ws-item .idx{font-size:12px; color:var(--muted-dim);}
+  .ws-item .name{font-size:17px;}
+  .ws-item.active{color:var(--fg);}
+  .ws-item.active .idx{color:var(--accent);}
+
+  .ws-panel{position:relative;}
+  .ws-visual{display:none; border-radius:14px; overflow:hidden; border:1px solid var(--sera-line);}
+  .ws-visual.active{display:block; animation:fadein .5s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+  .ws-desc{margin-top:22px; max-width:520px; color:var(--muted); font-size:15px; line-height:1.6;}
+
+  @media (max-width:820px){
+    .ws-layout{grid-template-columns:1fr;}
+    .ws-list{flex-direction:row; flex-wrap:wrap; border-top:none;}
+    .ws-item{border:none; padding:10px 14px; border:1px solid var(--line); border-radius:100px; margin:4px 6px 4px 0;}
+  }
+
+  /* generic mint product panel */
+  .mint-panel{background:var(--sera-bg); padding:clamp(20px,3vw,32px);}
+  .mint-header{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+  .mint-header .dot{width:8px; height:8px; border-radius:50%; background:var(--sera-accent);}
+  .mint-header .title{font-family:var(--sans); font-weight:600; font-size:13.5px; color:var(--sera-ink);}
+  .mint-row{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .mint-card{background:var(--sera-panel); border-radius:12px; padding:18px; border:1px solid var(--sera-line);}
+  .mint-card .label{font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--sera-accent); font-weight:600; margin-bottom:10px;}
+  .mint-list{list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .mint-list li{font-size:12.5px; color:var(--sera-ink); display:flex; gap:8px; align-items:flex-start;}
+  .mint-list li::before{content:'✓'; color:var(--sera-accent); font-size:11px; margin-top:1px;}
+  .mint-chip{display:inline-block; font-size:10.5px; background:rgba(18,138,103,0.1); color:var(--sera-accent); padding:5px 10px; border-radius:100px; margin:3px 4px 0 0;}
+
+  /* ---------- deep walkthrough (portfolio / interview) ---------- */
+  .deep{padding:120px 0;}
+  .deep.alt{background:var(--bg-raised); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .deep-head{display:flex; align-items:center; gap:14px; margin-bottom:8px;}
+  .deep-head .icn{width:32px; height:32px; border-radius:8px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:15px;}
+  .deep-head h2{font-size:clamp(24px,3.4vw,34px);}
+  .deep-tagline{color:var(--muted); font-size:15px; margin-bottom:44px; margin-left:46px;}
+
+  .step-rail{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:48px;}
+  .step-chip{
+    font-size:11.5px; color:var(--muted); border:1px solid var(--line-strong); border-radius:100px;
+    padding:7px 14px; cursor:pointer; background:none; transition:all .25s; font-family:var(--sans);
+  }
+  .step-chip.active{color:var(--bg); background:var(--fg); border-color:var(--fg);}
+
+  .deep-body{display:grid; grid-template-columns:1.4fr 1fr; gap:40px; align-items:center;}
+  /* Grid items default to min-width:auto, so .mint-panel's own content
+     (two more nested grid columns of card text) sets a floor on how
+     narrow this track can go — wider than the viewport on small phones.
+     min-width:0 lets the whole chain actually shrink to fit. */
+  .deep-body > *{ min-width: 0; }
+  .mint-row > *{ min-width: 0; }
+  .deep-caption{}
+  .deep-caption .k{font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent); margin-bottom:14px; display:block;}
+  .deep-caption p{font-family:var(--serif); font-weight:500; font-size:clamp(18px,2.2vw,24px); line-height:1.45;}
+  @media (max-width:900px){ .deep-body{grid-template-columns:1fr;} .deep-body{gap:28px;} }
+
+  .highlight-zone{transition:box-shadow .3s, background .3s; border-radius:8px;}
+  .highlight-zone.hl{box-shadow:0 0 0 1px var(--sera-accent) inset; background:rgba(18,138,103,0.06);}
+
+  /* interview specific */
+  .interview-card{background:var(--sera-panel); border-radius:14px; padding:26px; text-align:center; border:1px solid var(--sera-line);}
+  .interview-avatar{width:56px; height:56px; border-radius:50%; background:var(--sera-ink); margin:0 auto 16px; display:flex; align-items:center; justify-content:center;}
+  .interview-q{font-family:var(--sans); font-size:14px; color:var(--sera-ink); font-weight:500; margin-bottom:6px;}
+  .interview-meta{display:flex; justify-content:center; gap:16px; font-size:11px; color:var(--sera-muted); margin-top:14px;}
+
+  /* ---------- CAREER GROWTH roadmap ---------- */
+  #growth{padding:120px 0;}
+  .road{display:flex; flex-direction:column; gap:0; margin-top:56px;}
+  .road-step{
+    display:grid; grid-template-columns:60px 1fr; gap:22px; padding:26px 0;
+    border-top:1px solid var(--line); cursor:pointer;
+  }
+  .road-step:last-child{border-bottom:1px solid var(--line);}
+  .road-step .num{font-family:var(--serif); font-weight:600; font-size:22px; color:var(--muted-dim); transition:color .3s;}
+  .road-step .title{font-family:var(--sans); font-weight:600; font-size:16px; margin-bottom:6px; transition:color .3s;}
+  .road-step .desc{color:var(--muted); font-size:14.5px; max-height:0; overflow:hidden; opacity:0; transition:max-height .4s ease, opacity .4s ease, margin .4s ease;}
+  .road-step.active .num, .road-step.active .title{color:var(--accent);}
+  .road-step.active .desc{max-height:80px; opacity:1; margin-top:6px;}
+
+  /* ---------- APTITUDE ---------- */
+  #aptitude{padding:120px 0; background:var(--bg-raised); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .apt-grid{display:grid; grid-template-columns:280px 1fr; gap:56px; align-items:center; margin-top:56px;}
+  .apt-score{display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid var(--line); border-radius:14px; padding:40px 20px;}
+  .apt-score .num{font-family:var(--serif); font-weight:700; font-size:76px; line-height:1; color:var(--accent); letter-spacing:-0.02em;}
+  .apt-score .lbl{margin-top:10px; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);}
+  .apt-cats{margin-bottom:36px;}
+  .apt-cats .k{font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; display:block;}
+  .apt-cats .tags{display:flex; flex-wrap:wrap; gap:8px;}
+  .apt-tag{font-size:13px; border:1px solid var(--line-strong); border-radius:100px; padding:7px 16px;}
+  .apt-matches{display:flex; flex-direction:column; gap:14px;}
+  .apt-match{display:grid; grid-template-columns:160px 1fr 50px; align-items:center; gap:14px;}
+  .apt-match .name{font-size:14px;}
+  .apt-bar{height:5px; background:var(--line); border-radius:100px; overflow:hidden;}
+  .apt-bar span{display:block; height:100%; background:var(--accent); border-radius:100px; width:0; transition:width 1.2s cubic-bezier(.2,.8,.2,1);}
+  .apt-bar.in span{width:var(--w);}
+  .apt-match .pct{font-size:12.5px; color:var(--muted); text-align:right;}
+  @media (max-width:820px){ .apt-grid{grid-template-columns:1fr;} .apt-match{grid-template-columns:120px 1fr 40px;} }
+
+  /* ---------- AI BALANCE ---------- */
+  #ai-balance{padding:clamp(110px,16vw,180px) 0;}
+  .ai-q{font-family:var(--serif); font-weight:600; font-size:clamp(24px,3.6vw,40px); text-align:center; margin-bottom:56px; letter-spacing:-0.01em;}
+  .contrast{display:grid; grid-template-columns:1fr 1fr; gap:2px; background:var(--line); border:1px solid var(--line); margin-bottom:56px; border-radius:18px; overflow:hidden;}
+  .contrast > div{background:var(--bg); padding:44px 32px; text-align:center;}
+  .contrast h3{font-family:var(--sans); font-weight:600; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:16px; color:var(--muted);}
+  .contrast p{font-size:14.5px; color:var(--muted-dim); max-width:280px; margin:0 auto;}
+  .contrast .no p{color:var(--muted-dim);}
+  .contrast .yes{background:rgba(18,138,103,0.06);}
+  .contrast .yes h3{color:var(--accent);}
+  .contrast .yes p{color:var(--fg);}
+  .principle{text-align:center;}
+  .principle .big{font-family:var(--serif); font-weight:600; font-size:clamp(22px,3.2vw,34px); margin-bottom:20px; letter-spacing:-0.01em;}
+  .principle p{max-width:640px; margin:0 auto; color:var(--muted); font-size:15.5px; line-height:1.6;}
+
+  /* ---------- AI integration + worked well ---------- */
+  #ai-integration{padding:0 0 60px;}
+  #worked{padding:80px 0 60px;}
+  #future{padding:0 0 120px;}
+  .future-list{list-style:none; display:flex; flex-direction:column; gap:10px; margin-top:18px;}
+  .future-list li{
+    position:relative; padding-left:22px; color:var(--muted); font-size:15px; line-height:1.6;
+  }
+  .future-list li::before{
+    content:''; position:absolute; left:0; top:9px; width:7px; height:7px;
+    border-radius:50%; background:var(--accent);
+  }
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:48px;}
+  @media (max-width:760px){ .two-col{grid-template-columns:1fr;} }
+  .worked-card h3{font-family:var(--sans); font-weight:600; font-size:18px; margin-bottom:14px;}
+  .worked-card p{color:var(--muted); font-size:15px; line-height:1.65; margin-bottom:8px;}
+
+  .pain-quotes{display:flex; flex-direction:column; gap:22px; margin-top:36px; padding-top:36px; border-top:1px solid var(--line);}
+  .pain-quotes .pq{padding-left:20px; border-left:2px solid var(--accent);}
+  .pain-quotes .pq span{font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:6px;}
+  .pain-quotes .pq p{font-family:var(--serif); font-weight:500; font-style:italic; font-size:16px; color:var(--fg);}
+
+  /* ---------- MY ROLE ---------- */
+  #role{padding:120px 0; background:var(--bg-raised); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .role-grid{display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; margin-top:44px;}
+  .role-tags{display:flex; flex-wrap:wrap; gap:10px;}
+  .role-tag{font-size:13.5px; border:1px solid var(--line-strong); border-radius:100px; padding:9px 18px;}
+  .role-note{color:var(--muted); font-size:14px; line-height:1.6; margin-top:26px;}
+  @media (max-width:760px){ .role-grid{grid-template-columns:1fr;} }
+
+  /* ---------- ENDING ---------- */
+  #ending{padding:clamp(120px,20vw,220px) 0 100px; text-align:center; background:var(--bg);}
+  #ending .final-word{font-family:var(--serif); font-weight:600; font-size:clamp(18px,2.6vw,22px); color:var(--muted); margin-bottom:10px; letter-spacing:0.02em;}
+  #ending .final-statement{font-family:var(--serif); font-weight:600; font-size:clamp(28px,4.8vw,54px); line-height:1.2; margin-bottom:64px; letter-spacing:-0.02em;}
+  .end-orb{width:56px; height:56px; border-radius:50%; margin:0 auto 40px; background:radial-gradient(circle at 30% 30%, #ffffff, #bff0e0 40%, #9fd4ec 70%, #c9bdf0 100%);}
+
+  .next-nav{border-top:1px solid var(--line); padding-top:36px; display:flex; justify-content:space-between; align-items:center; text-align:left;}
+  .next-nav a{text-decoration:none;}
+  .next-nav .lbl{font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:8px;}
+  .next-nav .proj{font-family:var(--serif); font-weight:600; font-size:22px;}
+  .footer-credit{margin-top:100px; color:var(--muted-dim); font-size:12px; display:flex; justify-content:space-between;}
+  @media (max-width:600px){ .footer-credit{flex-direction:column; gap:6px;} }
+
+  h2{color:var(--fg);}
+
+  /* ---------- ambient idle motion ---------- */
+  @keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+  .end-orb{animation:floaty 4.6s ease-in-out infinite;}
+
+  @keyframes chipPulse{from{transform:scale(0.92);} to{transform:scale(1);}}
+  .step-chip.active{animation:chipPulse .45s cubic-bezier(.2,.8,.2,1);}
+
+  .flow-step{will-change:transform;}
+  .mint-card, .worked-card, .ps-card, .role-tag, .interview-card{
+    transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
+  }
+  .mint-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 18px 34px -22px rgba(14,32,39,0.25);
+  }
+  .worked-card:hover, .ps-card:hover{
+    transform:translateY(-3px);
+    border-color:var(--line-strong);
+  }
+  .ws-item{position:relative;}
+  .ws-item::after{
+    content:''; position:absolute; left:4px; right:4px; bottom:-1px; height:2px;
+    background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .3s ease;
+  }
+  .ws-item.active::after{transform:scaleX(1);}
+  @media (max-width:820px){ .ws-item::after{display:none;} }
+
+  .road-step{transition:background .3s ease, padding-left .3s ease;}
+  .road-step.active{background:var(--accent-soft); padding-left:10px;}
+
+  /* ---------- click-to-expand affordance ---------- */
+  .zoomable{position:relative; cursor:zoom-in;}
+  .zoomable::before{
+    content:''; position:absolute; inset:0; border-radius:inherit;
+    background:rgba(12,21,38,0); transition:background .3s ease; pointer-events:none;
+  }
+  .zoomable:hover::before{background:rgba(12,21,38,0.03);}
+  .zoom-hint{
+    position:absolute; bottom:16px; right:16px; width:42px; height:42px; border-radius:50%;
+    background:rgba(12,21,38,0.82); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center; z-index:6;
+    opacity:0; transform:scale(0.72) translateY(8px);
+    transition:opacity .3s ease, transform .3s cubic-bezier(.2,.8,.2,1);
+    pointer-events:none;
+  }
+  .zoomable:hover .zoom-hint{opacity:1; transform:scale(1) translateY(0);}
+  .zoom-hint svg{width:18px; height:18px;}
+  .ws-visual-frame{position:relative;}
+  .ws-visual-frame .ws-visual{width:100%;}
+
+  /* ---------- lightbox ---------- */
+  .lightbox{
+    position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center;
+    padding:clamp(20px,6vw,64px); background:rgba(6,12,18,0.72); backdrop-filter:blur(10px);
+    opacity:0; pointer-events:none; transition:opacity .35s ease;
+  }
+  .lightbox.open{opacity:1; pointer-events:auto;}
+  .lightbox-inner{
+    max-width:min(880px,94vw); max-height:88vh; overflow:auto; width:100%;
+    border-radius:18px; box-shadow:0 50px 120px -24px rgba(0,0,0,0.6);
+    transform:scale(0.9) translateY(18px); transition:transform .4s cubic-bezier(.2,.8,.2,1);
+  }
+  .lightbox.open .lightbox-inner{transform:scale(1) translateY(0);}
+  .lightbox-close{
+    position:absolute; top:24px; right:28px; width:44px; height:44px; border-radius:50%;
+    border:1px solid rgba(255,255,255,0.28); background:rgba(255,255,255,0.08); color:#fff;
+    font-size:18px; line-height:1; cursor:pointer; transition:background .2s, transform .2s;
+  }
+  .lightbox-close:hover{background:rgba(255,255,255,0.2); transform:scale(1.06);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="#hero">Dhvani Patel</a>
+  <span class="tag">SERA · Case Study</span>
+</div>
+
+<!-- 01 HERO -->
+<section id="hero" class="dark-section">
+  <div class="hero-bg-word"><span>SERA</span></div>
+  <div class="wrap">
+    <div class="hero-meta">
+      <span class="meta-chip">AI Career Platform</span>
+      <span class="meta-chip">UX/UI</span>
+      <span class="meta-chip">Agentic Experience</span>
+      <span class="meta-chip">Product Design</span>
+      <span class="meta-chip">March, 2026</span>
+    </div>
+    <h1 class="hero-title">SERA</h1>
+    <p class="hero-sub">An AI career companion for designers, helping them build stronger portfolios, prepare for interviews, and navigate what comes next.</p>
+
+    <div class="laptop-mockup zoomable" id="heroVisual">
+      <div class="laptop-screen">
+        <div class="laptop-cam"></div>
+        <div class="laptop-display">
+          <img src="sera_assets/sera-hero-screenshot.png" alt="Sera AI chat interface: 'Hello, I am Sera' welcome screen with Portfolio Synthesis, Interview Prep, Career Growth, and Career Aptitude Test options">
+        </div>
+        <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="1.6"/><line x1="11" y1="8" x2="11" y2="14" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="8" y1="11" x2="14" y2="11" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+      </div>
+      <div class="laptop-hinge"></div>
+      <div class="laptop-base"></div>
+      <div class="laptop-shadow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 HOOK -->
+<section id="hook">
+  <div class="wrap">
+    <div class="hook-eyebrow"><span class="eyebrow">What is Sera?</span></div>
+    <p class="hook-statement">We have AI that can generate interfaces in seconds. Yet becoming a better designer still feels like <em>navigating in the dark.</em></p>
+    <div class="hook-support">
+      <p>Sera is an AI-powered design career companion that empowers designers to build stronger portfolios, prepare for interviews, identify skill gaps, and navigate career growth through personalised mentorship and visual workspaces.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 03 PROBLEM -->
+<section id="problem">
+  <div class="wrap problem-inner">
+    <div class="section-head">
+      <span class="eyebrow reveal-el">The problem</span>
+      <h2 class="reveal-el">Career growth shouldn&rsquo;t feel like piecing together a puzzle.</h2>
+      <p class="research-support reveal-el">Designers rely on scattered resources, making career growth fragmented and overwhelming.</p>
+    </div>
+
+    <div class="problem-web" id="problemWeb">
+      <svg class="problem-web-lines" id="problemWebLines" aria-hidden="true"></svg>
+
+      <div class="problem-core" id="problemCore">
+        <div class="problem-core-inner">
+          <p class="problem-core-title">Career growth is fragmented</p>
+          <p class="problem-core-support">Designers are expected to manage portfolios, interviews, skill gaps, career direction, feedback, mentorship, and opportunities across disconnected resources.</p>
+        </div>
+      </div>
+
+      <div class="problem-issue pi-portfolio">Portfolio</div>
+      <div class="problem-issue pi-skillgaps">Skill gaps</div>
+      <div class="problem-issue pi-feedback">Scattered feedback</div>
+      <div class="problem-issue pi-interview">Interview prep</div>
+      <div class="problem-issue pi-mentorship">Mentorship</div>
+      <div class="problem-issue pi-career">Career direction</div>
+      <div class="problem-issue pi-tools">Too many tools</div>
+      <div class="problem-issue pi-next">Unclear next steps</div>
+      <div class="problem-issue pi-resources">Disconnected resources</div>
+      <div class="problem-issue pi-opportunities">Finding relevant opportunities</div>
+    </div>
+  </div>
+</section>
+
+<!-- Reserved: SERA fragmentation/merge animation. Kept intact, hidden here, for reuse in a future "Introducing SERA" section. -->
+<div class="frag-field" id="fragField" style="display:none;" aria-hidden="true">
+  <div class="frag-item" style="top:8%; left:6%;">Portfolio</div>
+  <div class="frag-item" style="top:62%; left:2%;">Interview</div>
+  <div class="frag-item" style="top:20%; left:70%;">Skill gaps</div>
+  <div class="frag-item" style="top:74%; left:64%;">Career direction</div>
+  <div class="frag-item" style="top:44%; left:38%;">Mentorship</div>
+  <div class="frag-word">SERA</div>
+</div>
+
+<!-- 02.5 RESEARCH -->
+<section id="research">
+  <div class="wrap">
+    <div class="section-head research-head">
+      <span class="eyebrow reveal-el">Research</span>
+      <h2 class="reveal-el">Understanding the landscape before defining SERA</h2>
+      <p class="research-support reveal-el">We started by looking at how existing platforms support people across learning, career growth, mentorship, and professional development.</p>
+    </div>
+
+    <div class="research-annotation reveal-el">
+      <span>Who&rsquo;s already solving parts of this journey?</span>
+      <svg class="annotation-arrow" viewBox="0 0 120 60" fill="none" aria-hidden="true">
+        <path d="M2 4 C 40 4, 70 8, 96 34" stroke="var(--muted-dim)" stroke-width="1.2" stroke-linecap="round" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+        <path d="M88 30 L98 36 L94 24" stroke="var(--muted-dim)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="research-video-wrap reveal-el zoomable" id="researchVideoWrap">
+      <video class="research-video" id="researchVideo" playsinline muted loop preload="metadata" aria-label="A survey of platforms across learning, career growth, mentorship, and professional development, including BetterUp, Eightfold AI, Gloat, Metvy, and LinkedIn Learning">
+        <source src="sera_assets/sera-research-landscape.mp4" type="video/mp4">
+      </video>
+      <button class="research-video-toggle" id="researchVideoToggle" type="button" aria-label="Pause video">
+        <svg class="icon-play" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7-11-7z" fill="currentColor"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" fill="none"><path d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/></svg>
+      </button>
+      <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="1.6"/><line x1="11" y1="8" x2="11" y2="14" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="8" y1="11" x2="14" y2="11" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+    </div>
+  </div>
+</section>
+
+<!-- 02.6 WHO WE SPOKE TO -->
+<section id="spoke-to">
+  <div class="wrap">
+    <div class="section-head spoke-head">
+      <span class="eyebrow reveal-el">Who we spoke to</span>
+      <h2 class="reveal-el">Three perspectives across the career journey</h2>
+      <p class="research-support reveal-el">To understand how people navigate career growth, we spoke to people at different stages of their professional journey.</p>
+    </div>
+
+    <div class="spoke-cards">
+      <div class="spoke-card reveal-el">
+        <span class="idx">01</span>
+        <h3>Students</h3>
+        <p class="descriptor">Exploring what comes next</p>
+        <p class="desc">People who are still figuring out their direction, exploring career opportunities, and trying to understand which skills and paths are right for them.</p>
+        <div class="spoke-divider">
+          <span class="spoke-label">We wanted to understand</span>
+          <p class="spoke-question">How do people make career decisions when they&rsquo;re still figuring out where they want to go?</p>
+        </div>
+      </div>
+
+      <div class="spoke-card reveal-el">
+        <span class="idx">02</span>
+        <h3>Early-career designers</h3>
+        <p class="descriptor">Building experience and finding direction</p>
+        <p class="desc">Designers who have entered the industry and are actively building their portfolios, preparing for opportunities, and figuring out how to grow.</p>
+        <div class="spoke-divider">
+          <span class="spoke-label">We wanted to understand</span>
+          <p class="spoke-question">What makes it difficult to turn existing experience into meaningful career growth?</p>
+        </div>
+      </div>
+
+      <div class="spoke-card reveal-el">
+        <span class="idx">03</span>
+        <h3>Working designers</h3>
+        <p class="descriptor">Navigating what&rsquo;s next</p>
+        <p class="desc">Designers with professional experience who are considering their next move — whether that&rsquo;s changing roles, specialising, or pursuing new opportunities.</p>
+        <div class="spoke-divider">
+          <span class="spoke-label">We wanted to understand</span>
+          <p class="spoke-question">How do experienced designers decide what their next step should be?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="spoke-transition reveal-el">
+      <p>Across these perspectives, we were looking for the patterns behind career uncertainty.</p>
+      <svg class="spoke-transition-arrow" viewBox="0 0 24 40" fill="none" aria-hidden="true">
+        <path d="M12 1 L12 33" stroke="var(--muted-dim)" stroke-width="1.2" stroke-linecap="round" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+        <path d="M5 27 L12 35 L19 27" stroke="var(--muted-dim)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 04 INSIGHT -->
+<section id="insight">
+  <div class="wrap">
+    <div class="section-head insight-head">
+      <span class="eyebrow reveal-el">Insights</span>
+      <h2 class="reveal-el">Different career stages. Surprisingly similar gaps.</h2>
+      <p class="research-support reveal-el">Looking across the career journey and the existing ecosystem, several recurring gaps emerged in how people are guided, supported, and kept moving forward.</p>
+    </div>
+
+    <div class="insight-wall" id="insightWall">
+      <div class="insight-cards">
+        <div class="insight-card" style="--irot:-1deg; --iy:0px; --taperot:-4deg;">
+          <span class="insight-tape"></span>
+          <h3>Between-session support dropoff</h3>
+          <p>Support disappears after meetings, leaving users without structure, momentum, or accountability in their day-to-day progress.</p>
+        </div>
+        <div class="insight-card" style="--irot:0.8deg; --iy:10px; --taperot:3deg;">
+          <span class="insight-tape"></span>
+          <h3>No persistent career memory</h3>
+          <p>Career platforms often reset between interactions instead of maintaining an evolving understanding of the person's goals, experience, and progress.</p>
+        </div>
+        <div class="insight-card" style="--irot:-0.6deg; --iy:-6px; --taperot:-2deg;">
+          <span class="insight-tape"></span>
+          <h3>Advice without execution systems</h3>
+          <p>Good recommendations are often provided without a built-in environment for practice, measurement, and iteration.</p>
+        </div>
+        <div class="insight-card" style="--irot:1deg; --iy:6px; --taperot:4deg;">
+          <span class="insight-tape"></span>
+          <h3>Fragmented tool ecosystem</h3>
+          <p>Resumes, applications, interview preparation, courses, mentors, and career resources often live in separate places.</p>
+        </div>
+        <div class="insight-card" style="--irot:-0.9deg; --iy:-4px; --taperot:-3deg;">
+          <span class="insight-tape"></span>
+          <h3>Readiness blindness</h3>
+          <p>People can struggle to understand whether they are actually prepared, competitive, or ready for their next opportunity.</p>
+        </div>
+        <div class="insight-card" style="--irot:0.6deg; --iy:8px; --taperot:2deg;">
+          <span class="insight-tape"></span>
+          <h3>Lack of proactive guidance</h3>
+          <p>Most systems wait for users to ask for help instead of recognising when momentum is dropping, a gap is emerging, or an opportunity is approaching.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="spoke-transition insight-transition" id="insightTransition">
+      <p>These gaps pointed to a bigger opportunity: career support needed to be continuous, contextual, and actionable.</p>
+      <svg class="spoke-transition-arrow" viewBox="0 0 24 40" fill="none" aria-hidden="true">
+        <path d="M12 1 L12 33" stroke="var(--muted-dim)" stroke-width="1.2" stroke-linecap="round" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+        <path d="M5 27 L12 35 L19 27" stroke="var(--muted-dim)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 05 ITERATIONS -->
+<section id="iterations">
+  <div class="wrap">
+    <div class="section-head iterations-head">
+      <span class="eyebrow reveal-el">Iterations</span>
+      <h2 class="reveal-el">From scattered ideas to a clearer system</h2>
+      <p class="research-support reveal-el">We explored different ways SERA could turn career guidance into something more actionable, contextual, and connected.</p>
+    </div>
+
+    <div class="iter-videos">
+      <div class="iter-col iter-col-left" id="iterColLeft">
+        <div class="iter-video-wrap">
+          <video class="iter-video" id="iterVideoGuidance" playsinline muted loop preload="metadata" aria-label="An early exploration of how SERA could guide users through portfolio development and career decisions">
+            <source src="sera_assets/sera-iteration-guidance.mp4" type="video/mp4">
+          </video>
+          <button class="iter-video-toggle" id="iterVideoGuidanceToggle" type="button" aria-label="Pause video">
+            <svg class="icon-play" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7-11-7z" fill="currentColor"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24" fill="none"><path d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <div class="iter-caption">
+          <h3>Exploring the guidance model</h3>
+          <p>Exploring how SERA could guide users through portfolio development and career decisions.</p>
+        </div>
+      </div>
+
+      <div class="iter-col iter-col-right" id="iterColRight">
+        <div class="iter-video-wrap">
+          <video class="iter-video" id="iterVideoSystem" playsinline muted loop preload="metadata" aria-label="An exploration of how different career needs could come together within one connected experience">
+            <source src="sera_assets/sera-iteration-system.mp4" type="video/mp4">
+          </video>
+          <button class="iter-video-toggle" id="iterVideoSystemToggle" type="button" aria-label="Pause video">
+            <svg class="icon-play" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7-11-7z" fill="currentColor"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24" fill="none"><path d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <div class="iter-caption">
+          <h3>Exploring the system structure</h3>
+          <p>Exploring how different career needs could come together within one connected experience.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="spoke-transition iter-transition" id="iterTransition">
+      <p>The direction became clearer: SERA shouldn't just recommend the next step. It should help people understand it, act on it, and carry that context forward.</p>
+      <svg class="spoke-transition-arrow" viewBox="0 0 24 40" fill="none" aria-hidden="true">
+        <path d="M12 1 L12 33" stroke="var(--muted-dim)" stroke-width="1.2" stroke-linecap="round" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+        <path d="M5 27 L12 35 L19 27" stroke="var(--muted-dim)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 06 WORKSPACES -->
+<section id="workspaces">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The Sera System</span>
+      <h2>Four workspaces, one companion</h2>
+    </div>
+    <div class="ws-layout">
+      <div class="ws-list" id="wsList">
+        <button class="ws-item active" data-ws="0"><span class="idx">01</span><span class="name">Portfolio Synthesis</span></button>
+        <button class="ws-item" data-ws="1"><span class="idx">02</span><span class="name">Interview Prep</span></button>
+        <button class="ws-item" data-ws="2"><span class="idx">03</span><span class="name">Career Growth</span></button>
+        <button class="ws-item" data-ws="3"><span class="idx">04</span><span class="name">Career Aptitude Test</span></button>
+      </div>
+      <div class="ws-panel">
+        <div class="ws-visual-frame zoomable" id="wsFrame">
+        <div class="ws-visual active" data-ws="0">
+          <div class="mint-panel">
+            <div class="mint-header"><span class="dot"></span><span class="title">Portfolio Diagnostics</span></div>
+            <div class="mint-row">
+              <div class="mint-card"><div class="label">What's working</div><ul class="mint-list"><li>Strong visual hierarchy</li><li>Clean interface layouts</li><li>Consistent design language</li></ul></div>
+              <div class="mint-card"><div class="label">Gaps &amp; improvements</div><ul class="mint-list"><li>Value proposition unclear</li><li>Missing case study depth</li><li>Weak hiring signals</li></ul></div>
+            </div>
+          </div>
+        </div>
+        <div class="ws-visual" data-ws="1">
+          <div class="mint-panel">
+            <div class="mint-header"><span class="dot"></span><span class="title">Live Interview Simulation</span></div>
+            <div class="interview-card">
+              <div class="interview-avatar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg></div>
+              <div class="interview-q">Design Hiring Manager Mode</div>
+              <p style="font-size:12px; color:var(--sera-muted);">The coach is now evaluating your live responses.</p>
+              <div class="interview-meta"><span>Timer 03:24</span><span>Audio active</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ws-visual" data-ws="2">
+          <div class="mint-panel">
+            <div class="mint-header"><span class="dot"></span><span class="title">Target Career Profile</span></div>
+            <div class="mint-row">
+              <div class="mint-card"><div class="label">Current role</div><p style="font-size:13px;color:var(--sera-ink);">Product Designer · 2 years</p></div>
+              <div class="mint-card"><div class="label">Target role</div><p style="font-size:13px;color:var(--sera-ink);">Senior Product Designer</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="ws-visual" data-ws="3">
+          <div class="mint-panel">
+            <div class="mint-header"><span class="dot"></span><span class="title">Design Competency Profile</span></div>
+            <div class="mint-card">
+              <div class="label">You are an ownership-driven problem-solver</div>
+              <p style="font-size:12.5px; color:var(--sera-ink); line-height:1.6;">Thinking · Impact · Clarity · Structure · Curiosity</p>
+            </div>
+          </div>
+        </div>
+          <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="1.6"/><line x1="11" y1="8" x2="11" y2="14" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="8" y1="11" x2="14" y2="11" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        </div>
+        <p class="ws-desc" id="wsDesc">Portfolio Synthesis analyzes research, storytelling, visual hierarchy, and hiring signals to deliver actionable feedback.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 PORTFOLIO SYNTHESIS -->
+<section class="deep" id="portfolio">
+  <div class="wrap">
+    <div class="deep-head"><div class="icn">⧉</div><h2>Portfolio Synthesis</h2></div>
+    <p class="deep-tagline">Your journey to a recruiter-ready portfolio.</p>
+
+    <div class="step-rail" id="pfRail">
+      <button class="step-chip active" data-step="0">01 Portfolio Upload</button>
+      <button class="step-chip" data-step="0">02 AI Portfolio Analysis</button>
+      <button class="step-chip" data-step="1">03 Strengths &amp; Improvements</button>
+      <button class="step-chip" data-step="1">04 Case Study Prioritization</button>
+      <button class="step-chip" data-step="2">05 Optimize Existing Projects</button>
+      <button class="step-chip" data-step="2">06 Portfolio Gap Analysis</button>
+      <button class="step-chip" data-step="1">07 Recommended Direction</button>
+      <button class="step-chip" data-step="1">08 Suggested New Projects</button>
+      <button class="step-chip" data-step="3">09 Project Selection</button>
+      <button class="step-chip" data-step="3">10 Project Workspace</button>
+      <button class="step-chip" data-step="3">11 Portfolio Ready</button>
+    </div>
+
+    <div class="deep-body">
+      <div class="mint-panel zoomable" style="border-radius:12px;">
+        <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="1.6"/><line x1="11" y1="8" x2="11" y2="14" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="8" y1="11" x2="14" y2="11" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        <div class="mint-header"><span class="dot"></span><span class="title">Portfolio Synthesis</span></div>
+        <div class="mint-row">
+          <div class="mint-card highlight-zone" data-zone="0"><div class="label">Diagnostics</div><ul class="mint-list"><li>Research analysis</li><li>Storytelling</li><li>Visual hierarchy</li><li>Hiring signals</li></ul></div>
+          <div class="mint-card highlight-zone" data-zone="1"><div class="label">Recommendations</div><ul class="mint-list"><li>Case study fit</li><li>New project ideas</li><li>Portfolio direction</li></ul></div>
+        </div>
+        <div class="mint-row" style="margin-top:16px;">
+          <div class="mint-card highlight-zone" data-zone="2"><div class="label">Coverage</div><ul class="mint-list"><li>Strengths</li><li>Skill gaps</li></ul></div>
+          <div class="mint-card highlight-zone" data-zone="3"><div class="label">Roadmap</div><ul class="mint-list"><li>Milestones</li><li>Timelines</li><li>Deliverables</li></ul></div>
+        </div>
+      </div>
+      <div class="deep-caption">
+        <span class="k">Step 1</span>
+        <p id="pfCaption">Portfolio Synthesis analyzes research, storytelling, visual hierarchy, and hiring signals to deliver actionable feedback.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 INTERVIEW PREP -->
+<section class="deep alt" id="interview">
+  <div class="wrap">
+    <div class="deep-head"><div class="icn">◐</div><h2>Interview Prep</h2></div>
+    <p class="deep-tagline">Your journey to ace every design interview.</p>
+
+    <div class="step-rail" id="ivRail">
+      <button class="step-chip active" data-step="0">01 Set Your Goal</button>
+      <button class="step-chip" data-step="0">02 AI Interview Plan</button>
+      <button class="step-chip" data-step="0">03 Role &amp; Company Research</button>
+      <button class="step-chip" data-step="1">04 Question Bank</button>
+      <button class="step-chip" data-step="1">05 Mock Interview</button>
+      <button class="step-chip" data-step="2">06 AI Feedback &amp; Scoring</button>
+      <button class="step-chip" data-step="2">07 Improve &amp; Refine</button>
+      <button class="step-chip" data-step="1">08 Real Interview Simulation</button>
+      <button class="step-chip" data-step="2">09 Track Progress</button>
+      <button class="step-chip" data-step="2">10 Tips &amp; Resources</button>
+      <button class="step-chip" data-step="2">11 Interview Ready</button>
+    </div>
+
+    <div class="deep-body">
+      <div class="interview-card zoomable" id="ivCard">
+        <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="1.6"/><line x1="11" y1="8" x2="11" y2="14" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="8" y1="11" x2="14" y2="11" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        <div class="interview-avatar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg></div>
+        <div class="interview-q" id="ivQ">"Tell me about a project where you had to change direction."</div>
+        <p style="font-size:12px; color:var(--sera-muted);" id="ivSub">AI Interviewer · Design Hiring Manager Mode</p>
+        <div class="interview-meta"><span>Timer 03:24</span><span>Audio active</span></div>
+      </div>
+      <div class="deep-caption">
+        <span class="k">Step 1</span>
+        <p id="ivCaption">Practice realistic voice-to-voice interviews where the AI adapts, evaluates, and coaches you in real time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 CAREER GROWTH -->
+<section id="growth">
+  <div class="wrap">
+    <div class="deep-head" style="margin-bottom:8px;"><div class="icn">↗</div><h2>Career Growth</h2></div>
+    <p class="deep-tagline" style="margin-bottom:8px;">Your personalised roadmap to become a better designer.</p>
+
+    <div class="road" id="roadList">
+      <div class="road-step active" data-i="0">
+        <span class="num">01</span>
+        <div><div class="title">Understand You</div><div class="desc">We analyze your background, current skills and career goals.</div></div>
+      </div>
+      <div class="road-step" data-i="1">
+        <span class="num">02</span>
+        <div><div class="title">Identify Gaps</div><div class="desc">We pinpoint the skills and experiences you need to grow.</div></div>
+      </div>
+      <div class="road-step" data-i="2">
+        <span class="num">03</span>
+        <div><div class="title">Personalized Roadmap</div><div class="desc">Get a custom plan with clear steps and learning paths.</div></div>
+      </div>
+      <div class="road-step" data-i="3">
+        <span class="num">04</span>
+        <div><div class="title">Learn. Practice. Build.</div><div class="desc">Curated resources, hands-on projects and real-world practice to level up.</div></div>
+      </div>
+      <div class="road-step" data-i="4">
+        <span class="num">05</span>
+        <div><div class="title">Grow &amp; Achieve</div><div class="desc">Track progress, celebrate wins and move closer to your dream role.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 APTITUDE -->
+<section id="aptitude">
+  <div class="wrap">
+    <div class="deep-head" style="margin-bottom:8px;"><div class="icn">◈</div><h2>Career Aptitude Test</h2></div>
+    <p class="deep-tagline" style="margin-bottom:8px;">Discover your strengths. Find the roles that fit you best.</p>
+
+    <div class="apt-grid" id="aptGrid">
+      <div class="apt-score">
+        <div class="num">82</div>
+        <div class="lbl">Aptitude Score</div>
+      </div>
+      <div>
+        <div class="apt-cats">
+          <span class="k">You excel in</span>
+          <div class="tags">
+            <span class="apt-tag">Problem Solving</span>
+            <span class="apt-tag">Design Thinking</span>
+            <span class="apt-tag">Communication</span>
+          </div>
+        </div>
+        <div class="apt-matches">
+          <span class="k" style="font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:2px; display:block;">Top career matches</span>
+          <div class="apt-match"><span class="name">Product Designer</span><div class="apt-bar" data-w="92"><span></span></div><span class="pct">92%</span></div>
+          <div class="apt-match"><span class="name">UX Researcher</span><div class="apt-bar" data-w="88"><span></span></div><span class="pct">88%</span></div>
+          <div class="apt-match"><span class="name">Interaction Designer</span><div class="apt-bar" data-w="85"><span></span></div><span class="pct">85%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 DESIGNING WITH AI -->
+<section id="ai-balance">
+  <div class="wrap">
+    <div class="section-head" style="margin:0 auto 48px; text-align:center;">
+      <span class="eyebrow" style="justify-content:center; width:100%;">The Design Question</span>
+    </div>
+    <p class="ai-q">How much should AI do?</p>
+    <div class="contrast">
+      <div class="no"><h3>Do Everything</h3><p>The designer stops thinking. Little is left to learn.</p></div>
+      <div class="yes"><h3>Guide the Designer</h3><p>Sera prompts, questions, and coaches; the designer still does the work.</p></div>
+    </div>
+    <div class="principle">
+      <p class="big">Guidance over replacement.</p>
+      <p>One of the hardest decisions was deciding where AI should step back. If Sera solved every problem for the user, there would be very little learning left. The product had to guide thinking, not replace it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 12 AI INTEGRATION + 13 WHAT WORKED -->
+<section id="ai-integration">
+  <div class="wrap">
+    <div class="two-col" style="padding-top:80px;">
+      <div class="worked-card">
+        <span class="eyebrow" style="margin-bottom:16px;">Design Challenge</span>
+        <h3>Introducing AI without overwhelming users</h3>
+        <p>The challenge wasn't building AI features, it was making them feel familiar, trustworthy, and integrated naturally into a designer's existing workflow.</p>
+      </div>
+      <div class="worked-card">
+        <span class="eyebrow" style="margin-bottom:16px;">Design Challenge</span>
+        <h3>Knowing when to stop helping</h3>
+        <p>Deciding where Sera should step back was one of the hardest calls, the product had to guide thinking rather than replace it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="worked">
+  <div class="wrap">
+    <div class="worked-card" style="max-width:720px;">
+      <span class="eyebrow" style="margin-bottom:16px;">What worked well</span>
+      <h3>Breaking career growth into manageable steps</h3>
+      <p>Most career advice tells designers what they should improve. Sera focuses on what they should do next. Splitting the journey into dedicated workspaces made overwhelming goals feel achievable.</p>
+    </div>
+    <div class="pain-quotes">
+      <div class="pq"><span>Pain point</span><p>Every portfolio review tells me what's wrong, but nobody explains how to actually improve it.</p></div>
+      <div class="pq"><span>Pain point</span><p>Everyone gives different advice, and I don't know which feedback actually applies to me.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13.5 FUTURE SCOPE -->
+<section id="future">
+  <div class="wrap">
+    <div class="worked-card" style="max-width:720px;">
+      <span class="eyebrow" style="margin-bottom:16px;">Future scope</span>
+      <h3>Explore additional ideas</h3>
+      <ul class="future-list">
+        <li>Industry Benchmarking</li>
+        <li>Industry Knowledge Packs</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 14 MY ROLE -->
+<section id="role">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">My Role</span>
+      <h2>What I contributed</h2>
+    </div>
+    <div class="role-grid">
+      <div>
+        <!-- Edit these tags to reflect your exact individual contribution -->
+        <div class="role-tags">
+          <span class="role-tag">Product Design</span>
+          <span class="role-tag">UX/UI</span>
+          <span class="role-tag">Research</span>
+          <span class="role-tag">AI Experience</span>
+          <span class="role-tag">Interaction Design</span>
+        </div>
+      </div>
+      <div>
+        <p class="role-note">Sera was designed as a three-person team project. This page documents my individual design work within that collaboration, from the research and problem framing through to the interaction and AI-experience decisions above.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 ENDING -->
+<section id="ending" class="dark-section">
+  <div class="wrap">
+    <div class="end-orb"></div>
+    <p class="final-word">SERA</p>
+    <p class="final-statement">Helping designers figure out<br>what comes next.</p>
+
+    <div class="next-nav">
+      <div>
+        <span class="lbl">Next project</span>
+        <a href="#"><span class="proj">View more work →</span></a>
+      </div>
+    </div>
+    <div class="footer-credit">
+      <span>UI/UX Case Study · 2026</span>
+      <span>Designed by Dhvani Patel</span>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
+  <div class="lightbox-inner" id="lightboxContent"></div>
+</div>
+
+<script>
+(function(){
+  // Fragmented -> unified reveal
+  var frag = document.getElementById('fragField');
+  var items = frag.querySelectorAll('.frag-item');
+  var positions = [
+    {top:'44%', left:'6%'},
+    {top:'44%', left:'26%'},
+    {top:'44%', left:'46%'},
+    {top:'44%', left:'66%'},
+    {top:'44%', left:'86%'}
+  ];
+  var merged = false;
+  function mergeFrag(){
+    if(merged) return; merged = true;
+    items.forEach(function(el,i){
+      el.style.top = positions[i].top;
+      el.style.left = positions[i].left;
+      el.style.transform = 'translate(-50%,-50%)';
+    });
+    setTimeout(function(){ frag.classList.add('merged'); }, 900);
+  }
+  var fragObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) mergeFrag(); });
+  }, {threshold:0.5});
+  fragObserver.observe(frag);
+
+  // Research section — staggered reveal
+  (function(){
+    var research = document.getElementById('research');
+    if(!research) return;
+    var revealEls = research.querySelectorAll('.reveal-el');
+    var revealed = false;
+    var researchObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting && !revealed){
+          revealed = true;
+          revealEls.forEach(function(el, i){
+            setTimeout(function(){ el.classList.add('in'); }, i * 160);
+          });
+        }
+      });
+    }, {threshold:0.35});
+    researchObserver.observe(research);
+
+    // Research video — autoplay in view, pause out of view;
+    // hover toggle always reflects real playback state (no permanent-hide bug)
+    var video = document.getElementById('researchVideo');
+    var toggleBtn = document.getElementById('researchVideoToggle');
+    if(video){
+      function tryPlay(){ video.play().catch(function(){}); }
+      var videoObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting) tryPlay();
+          else video.pause();
+        });
+      }, {threshold:0.3});
+      videoObserver.observe(video);
+      if(toggleBtn){
+        video.addEventListener('play', function(){ toggleBtn.classList.add('is-playing'); toggleBtn.setAttribute('aria-label','Pause video'); });
+        video.addEventListener('pause', function(){ toggleBtn.classList.remove('is-playing'); toggleBtn.setAttribute('aria-label','Play video'); });
+        toggleBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          if(video.paused) tryPlay(); else video.pause();
+        });
+      }
+    }
+  })();
+
+  // Who We Spoke To — staggered reveal
+  (function(){
+    var section = document.getElementById('spoke-to');
+    if(!section) return;
+    var headEls = section.querySelectorAll('.spoke-head .reveal-el');
+    var cardEls = section.querySelectorAll('.spoke-card.reveal-el');
+    var revealed = false;
+    var staggerEls = Array.prototype.slice.call(headEls).concat(Array.prototype.slice.call(cardEls));
+    var headObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting && !revealed){
+          revealed = true;
+          staggerEls.forEach(function(el, i){
+            setTimeout(function(){ el.classList.add('in'); }, i * 140);
+          });
+        }
+      });
+    }, {threshold:0.3});
+    headObserver.observe(section);
+
+    var transition = section.querySelector('.spoke-transition');
+    if(transition){
+      var transitionObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){
+            transition.classList.add('in');
+            transitionObserver.disconnect();
+          }
+        });
+      }, {threshold:0.6});
+      transitionObserver.observe(transition);
+    }
+  })();
+
+  // Problem section: many scattered issues feeding into one central problem.
+  // Eyebrow, heading, statement, then the core (understood first), then the
+  // surrounding issues with their connector lines drawing inward. No
+  // convergence, no SERA: the fragmentation stays unresolved here.
+  (function(){
+    var section = document.getElementById('problem');
+    if(!section) return;
+    var headEls = section.querySelectorAll('.section-head .reveal-el');
+    var web = document.getElementById('problemWeb');
+    var svg = document.getElementById('problemWebLines');
+    var core = document.getElementById('problemCore');
+    var issues = web ? web.querySelectorAll('.problem-issue') : [];
+    var revealed = false;
+
+    // Updates each path's "d" in place rather than rebuilding the SVG's
+    // innerHTML, so a resize mid-animation (or right after) never orphans
+    // the pending reveal timers or resets an already-drawn line.
+    function buildLines(){
+      if(!web || !svg || !core) return;
+      var webRect = web.getBoundingClientRect();
+      var coreRect = core.getBoundingClientRect();
+      if(!webRect.width || !coreRect.width) return;
+      var cx = coreRect.left + coreRect.width / 2 - webRect.left;
+      var cy = coreRect.top + coreRect.height / 2 - webRect.top;
+      var cr = coreRect.width / 2;
+      var existing = svg.querySelectorAll('path');
+      issues.forEach(function(el, i){
+        var r = el.getBoundingClientRect();
+        var px = r.left + r.width / 2 - webRect.left;
+        var py = r.top + r.height / 2 - webRect.top;
+        var dx = cx - px, dy = cy - py;
+        var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        var ux = dx / dist, uy = dy / dist;
+        var endX = cx - ux * (cr + 8);
+        var endY = cy - uy * (cr + 8);
+        var startX = px + ux * 16;
+        var startY = py + uy * 10;
+        var nx = -uy, ny = ux;
+        var bend = (i % 2 === 0 ? 1 : -1) * (24 + (i * 11) % 32);
+        var c1x = startX + dx * 0.35 + nx * bend;
+        var c1y = startY + dy * 0.35 + ny * bend;
+        var c2x = startX + dx * 0.72 + nx * (bend * 0.35);
+        var c2y = startY + dy * 0.72 + ny * (bend * 0.35);
+        var d = 'M' + startX.toFixed(1) + ',' + startY.toFixed(1) +
+                ' C ' + c1x.toFixed(1) + ',' + c1y.toFixed(1) +
+                ' ' + c2x.toFixed(1) + ',' + c2y.toFixed(1) +
+                ' ' + endX.toFixed(1) + ',' + endY.toFixed(1);
+        var path = existing[i];
+        if(path){
+          path.setAttribute('d', d);
+        } else {
+          path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', d);
+          path.setAttribute('pathLength', '1');
+          if(revealed) path.classList.add('in');
+          svg.appendChild(path);
+        }
+      });
+    }
+
+    buildLines();
+    window.addEventListener('resize', buildLines);
+
+    var problemObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting && !revealed){
+          revealed = true;
+          buildLines();
+          headEls.forEach(function(el, i){
+            setTimeout(function(){ el.classList.add('in'); }, i * 150);
+          });
+          var coreDelay = headEls.length * 150 + 150;
+          setTimeout(function(){ if(core) core.classList.add('in'); }, coreDelay);
+
+          var issueBase = coreDelay + 450;
+          var svgPaths = svg ? svg.querySelectorAll('path') : [];
+          issues.forEach(function(el, i){
+            var delay = issueBase + i * 120;
+            setTimeout(function(){ el.classList.add('in'); }, delay);
+            var path = svgPaths[i];
+            if(path){
+              setTimeout(function(){ path.classList.add('in'); }, delay + 160);
+            }
+          });
+        }
+      });
+    }, {threshold:0.25});
+    problemObserver.observe(section);
+  })();
+
+  // Insights section: eyebrow, heading, statement, then the research wall
+  // fades/scales in, then the six gap cards settle in with a subtle stagger.
+  (function(){
+    var section = document.getElementById('insight');
+    if(!section) return;
+    var headEls = section.querySelectorAll('.insight-head .reveal-el');
+    var wall = document.getElementById('insightWall');
+    var cards = wall ? wall.querySelectorAll('.insight-card') : [];
+    var revealed = false;
+    var insightObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting && !revealed){
+          revealed = true;
+          headEls.forEach(function(el, i){
+            setTimeout(function(){ el.classList.add('in'); }, i * 150);
+          });
+          var wallDelay = headEls.length * 150 + 150;
+          setTimeout(function(){ if(wall) wall.classList.add('in'); }, wallDelay);
+          var cardBase = wallDelay + 350;
+          cards.forEach(function(el, i){
+            setTimeout(function(){ el.classList.add('in'); }, cardBase + i * 120);
+          });
+        }
+      });
+    }, {threshold:0.2});
+    insightObserver.observe(section);
+
+    var transition = document.getElementById('insightTransition');
+    if(transition){
+      var insightTransitionObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){
+            transition.classList.add('in');
+            insightTransitionObserver.disconnect();
+          }
+        });
+      }, {threshold:0.6});
+      insightTransitionObserver.observe(transition);
+    }
+  })();
+
+  // Iterations: eyebrow, heading, statement, then video 01, then video 02
+  // with a small stagger, then the closing synthesis statement. Both videos
+  // autoplay while in view and pause out of view, same as the research video.
+  (function(){
+    var section = document.getElementById('iterations');
+    if(!section) return;
+    var headEls = section.querySelectorAll('.iterations-head .reveal-el');
+    var colLeft = document.getElementById('iterColLeft');
+    var colRight = document.getElementById('iterColRight');
+    var revealed = false;
+
+    function wireVideo(videoId, toggleId){
+      var video = document.getElementById(videoId);
+      var toggleBtn = document.getElementById(toggleId);
+      if(!video) return;
+      function tryPlay(){ video.play().catch(function(){}); }
+      var videoObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting) tryPlay();
+          else video.pause();
+        });
+      }, {threshold:0.3});
+      videoObserver.observe(video);
+      if(toggleBtn){
+        video.addEventListener('play', function(){ toggleBtn.classList.add('is-playing'); toggleBtn.setAttribute('aria-label','Pause video'); });
+        video.addEventListener('pause', function(){ toggleBtn.classList.remove('is-playing'); toggleBtn.setAttribute('aria-label','Play video'); });
+        toggleBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          if(video.paused) tryPlay(); else video.pause();
+        });
+      }
+    }
+    wireVideo('iterVideoGuidance', 'iterVideoGuidanceToggle');
+    wireVideo('iterVideoSystem', 'iterVideoSystemToggle');
+
+    var iterObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting && !revealed){
+          revealed = true;
+          headEls.forEach(function(el, i){
+            setTimeout(function(){ el.classList.add('in'); }, i * 150);
+          });
+          var colBase = headEls.length * 150 + 150;
+          setTimeout(function(){ if(colLeft) colLeft.classList.add('in'); }, colBase);
+          setTimeout(function(){ if(colRight) colRight.classList.add('in'); }, colBase + 160);
+        }
+      });
+    }, {threshold:0.2});
+    iterObserver.observe(section);
+
+    var transition = document.getElementById('iterTransition');
+    if(transition){
+      var iterTransitionObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){
+            transition.classList.add('in');
+            iterTransitionObserver.disconnect();
+          }
+        });
+      }, {threshold:0.6});
+      iterTransitionObserver.observe(transition);
+    }
+  })();
+
+  // Workspace selector
+  var wsItems = document.querySelectorAll('.ws-item');
+  var wsVisuals = document.querySelectorAll('.ws-visual');
+  var wsDescriptions = [
+    "Portfolio Synthesis analyzes research, storytelling, visual hierarchy, and hiring signals to deliver actionable feedback.",
+    "Practice realistic voice-to-voice interviews where the AI adapts, evaluates, and coaches you in real time.",
+    "SERA captures each designer's experience, goals, and challenges to create a personalized roadmap for growth.",
+    "Analyse your design mindset to uncover strengths, growth areas, and personalised development recommendations."
+  ];
+  function setWs(idx){
+    wsItems.forEach(function(el){ el.classList.toggle('active', el.dataset.ws == idx); });
+    wsVisuals.forEach(function(el){ el.classList.toggle('active', el.dataset.ws == idx); });
+    document.getElementById('wsDesc').textContent = wsDescriptions[idx];
+  }
+  wsItems.forEach(function(el){
+    el.addEventListener('click', function(){ setWs(el.dataset.ws); });
+    el.addEventListener('mouseenter', function(){
+      if(matchMedia('(hover:hover)').matches) setWs(el.dataset.ws);
+    });
+  });
+
+  // Portfolio Synthesis walkthrough
+  var pfCaptions = [
+    "Portfolio Synthesis analyzes research, storytelling, visual hierarchy, and hiring signals to deliver actionable feedback.",
+    "Instead of generic project ideas, SERA recommends case studies tailored to each designer's portfolio gaps and career goals.",
+    "SERA analyzes portfolio coverage to highlight strengths, skill gaps, and growth opportunities.",
+    "SERA generates structured project roadmaps with clear milestones, timelines, and deliverables."
+  ];
+  var pfChips = document.querySelectorAll('#pfRail .step-chip');
+  var pfZones = document.querySelectorAll('#portfolio .highlight-zone');
+  function setPf(zone, label){
+    pfChips.forEach(function(c){ c.classList.toggle('active', c === label); });
+    pfZones.forEach(function(z){ z.classList.toggle('hl', z.dataset.zone == zone); });
+    document.getElementById('pfCaption').textContent = pfCaptions[zone];
+    document.querySelector('#portfolio .k').textContent = 'Step ' + (parseInt(zone)+1);
+  }
+  pfChips.forEach(function(chip){
+    chip.addEventListener('click', function(){ setPf(chip.dataset.step, chip); });
+  });
+
+  // Interview Prep walkthrough
+  var ivStates = [
+    {q:'"Tell me about a project where you had to change direction."', sub:'AI Interviewer · Design Hiring Manager Mode', caption:'Practice realistic voice-to-voice interviews where the AI adapts, evaluates, and coaches you in real time.'},
+    {q:'Live Interview Simulation, in progress', sub:'Responding in real time', caption:'A structured interview journey with simulations, live feedback, and personalised guidance.'},
+    {q:'Feedback · Evaluation · Guidance', sub:'Session complete', caption:'Every response is scored and followed by concrete, personalised coaching for the next attempt.'}
+  ];
+  var ivChips = document.querySelectorAll('#ivRail .step-chip');
+  function setIv(i, label){
+    ivChips.forEach(function(c){ c.classList.toggle('active', c === label); });
+    document.getElementById('ivQ').textContent = ivStates[i].q;
+    document.getElementById('ivSub').textContent = ivStates[i].sub;
+    document.getElementById('ivCaption').textContent = ivStates[i].caption;
+    document.querySelector('#interview .k').textContent = 'Step ' + (parseInt(i)+1);
+  }
+  ivChips.forEach(function(chip){
+    chip.addEventListener('click', function(){ setIv(chip.dataset.step, chip); });
+  });
+
+  // Career growth roadmap
+  var roadSteps = document.querySelectorAll('.road-step');
+  roadSteps.forEach(function(step){
+    step.addEventListener('click', function(){
+      roadSteps.forEach(function(s){ s.classList.toggle('active', s === step); });
+    });
+  });
+
+  // Aptitude bars animate in
+  var bars = document.querySelectorAll('.apt-bar');
+  var aptObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        bars.forEach(function(b){
+          b.style.setProperty('--w', b.dataset.w + '%');
+          b.classList.add('in');
+        });
+      }
+    });
+  }, {threshold:0.4});
+  var aptSection = document.getElementById('aptitude');
+  if(aptSection) aptObserver.observe(aptSection);
+
+  // Hero subtle parallax on scroll
+  var heroVisual = document.getElementById('heroVisual');
+  window.addEventListener('scroll', function(){
+    var y = window.scrollY;
+    if(y < window.innerHeight){
+      heroVisual.style.transform = 'translateY(' + Math.min(y*0.08, 40) + 'px) scale(' + (1 - Math.min(y*0.00015,0.04)) + ')';
+    }
+  }, {passive:true});
+
+  // ---------- Click-to-expand lightbox ----------
+  var lightbox = document.getElementById('lightbox');
+  var lightboxContent = document.getElementById('lightboxContent');
+  var lightboxClose = document.getElementById('lightboxClose');
+  function openLightbox(sourceEl){
+    var clone = sourceEl.cloneNode(true);
+    clone.classList.remove('zoomable');
+    clone.style.cursor = 'default';
+    var hint = clone.querySelector('.zoom-hint');
+    if(hint) hint.remove();
+    var toggle = clone.querySelector('.research-video-toggle');
+    if(toggle) toggle.remove();
+    lightboxContent.innerHTML = '';
+    lightboxContent.appendChild(clone);
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    var video = clone.querySelector('video');
+    if(video){
+      video.muted = false;
+      video.controls = true;
+      video.currentTime = 0;
+      video.play().catch(function(){});
+    }
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+    var video = lightboxContent.querySelector('video');
+    if(video) video.pause();
+  }
+  document.querySelectorAll('.zoomable').forEach(function(el){
+    el.addEventListener('click', function(){ openLightbox(el); });
+  });
+  lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
+  lightboxClose.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLightbox(); });
+
+  // ---------- Autoplay helpers ----------
+  // pauses on hover/interaction, resumes shortly after, only runs while section is in view
+  function makeAutoplay(sectionEl, hoverEl, tick, interval){
+    var timer = null;
+    var resumeTimeout = null;
+    var inView = false;
+    function start(){
+      stop();
+      timer = setInterval(tick, interval);
+    }
+    function stop(){
+      if(timer){ clearInterval(timer); timer = null; }
+    }
+    function pauseThenResume(){
+      stop();
+      if(resumeTimeout) clearTimeout(resumeTimeout);
+      resumeTimeout = setTimeout(function(){ if(inView) start(); }, 2200);
+    }
+    if(sectionEl){
+      var obs = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          inView = e.isIntersecting;
+          if(e.isIntersecting) start(); else stop();
+        });
+      }, {threshold:0.35});
+      obs.observe(sectionEl);
+    }
+    if(hoverEl){
+      hoverEl.addEventListener('mouseenter', stop);
+      hoverEl.addEventListener('mouseleave', function(){ if(inView) start(); });
+      hoverEl.addEventListener('click', pauseThenResume);
+    }
+  }
+
+  // Workspace selector autoplay
+  var wsIndex = 0;
+  makeAutoplay(document.getElementById('workspaces'), document.getElementById('wsList'), function(){
+    wsIndex = (wsIndex + 1) % wsItems.length;
+    setWs(wsIndex);
+  }, 1700);
+  wsItems.forEach(function(el){
+    el.addEventListener('click', function(){ wsIndex = parseInt(el.dataset.ws, 10); });
+    el.addEventListener('mouseenter', function(){ wsIndex = parseInt(el.dataset.ws, 10); });
+  });
+
+  // Portfolio walkthrough autoplay (cycles through the 4 highlight zones)
+  function chipForStep(chips, step){
+    for(var i=0;i<chips.length;i++){ if(chips[i].dataset.step == step) return chips[i]; }
+    return chips[0];
+  }
+  var pfIndex = 0;
+  makeAutoplay(document.getElementById('portfolio'), document.getElementById('portfolio').querySelector('.deep-body'), function(){
+    pfIndex = (pfIndex + 1) % pfCaptions.length;
+    setPf(pfIndex, chipForStep(pfChips, pfIndex));
+  }, 1400);
+  pfChips.forEach(function(chip){
+    chip.addEventListener('click', function(){ pfIndex = parseInt(chip.dataset.step, 10); });
+  });
+
+  // Interview walkthrough autoplay (cycles through the 3 states)
+  var ivIndex = 0;
+  makeAutoplay(document.getElementById('interview'), document.getElementById('interview').querySelector('.deep-body'), function(){
+    ivIndex = (ivIndex + 1) % ivStates.length;
+    setIv(ivIndex, chipForStep(ivChips, ivIndex));
+  }, 1400);
+  ivChips.forEach(function(chip){
+    chip.addEventListener('click', function(){ ivIndex = parseInt(chip.dataset.step, 10); });
+  });
+
+  // Career growth roadmap autoplay
+  var roadIndex = 0;
+  makeAutoplay(document.getElementById('growth'), document.getElementById('roadList'), function(){
+    roadIndex = (roadIndex + 1) % roadSteps.length;
+    roadSteps.forEach(function(s,i){ s.classList.toggle('active', i === roadIndex); });
+  }, 1200);
+  roadSteps.forEach(function(step, i){
+    step.addEventListener('click', function(){ roadIndex = i; });
+  });
+})();
+</script>
+
+</body>
+</html>
