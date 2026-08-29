@@ -949,24 +949,45 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
      this button is real text/padding and won't — scale it down to match so it
      stays a secondary accent under the heading instead of overpowering it. */
   .flip-cta{ padding: 10px 18px; font-size: 14px; gap: 8px; }
+  /* Every value below is the desktop value (see .flip-back and its
+     children, base rules above) scaled by the same ratio the card itself
+     shrinks by — not shrunk further/unevenly. An earlier pass shrank the
+     photo column and spacing more aggressively than the text, which is
+     what actually read as "bad design": a disproportionately tiny photo
+     and cramped spacing next to text that was relatively fine. Keeping
+     every piece at the same scale reproduces the laptop composition
+     faithfully, just smaller — not a layout redesign.
+     The scale itself is expressed as calc(--mw * ratio) rather than one
+     fixed px value: --mw tracks the card's own actual content width
+     (100vw minus the two page-margins) at whatever width this loads at,
+     so the proportions hold from 320px up through the 809px edge of this
+     breakpoint instead of only being correct at the one width they were
+     last tuned against. */
   .flip-back{
-    grid-template-columns: 62px 1fr;
-    column-gap: 10px;
-    row-gap: 3px;
-    padding: 10px 10px 22px;
+    --mw: calc(100vw - (2 * var(--page-margin)));
+    grid-template-columns: calc(var(--mw) * 0.28947) 1fr;
+    column-gap: calc(var(--mw) * 0.05263);
+    row-gap: calc(var(--mw) * 0.03684);
+    padding: calc(var(--mw) * 0.05789) calc(var(--mw) * 0.05789) calc(var(--mw) * 0.09211);
   }
-  .flip-back .about-photo{ border-radius: 5px; padding: 2px; }
-  .about-copy{ gap: 2px; }
-  .about-desc{ max-width: none; font-size: 6px; line-height: 1.18; }
-  .about-experience{ margin-top: 0; }
-  .about-experience-label{ font-size: 4.6px; margin-bottom: 0; }
-  .about-experience-value{ font-size: 6.3px; }
+  .flip-back .about-photo{ border-radius: calc(var(--mw) * 0.01316); }
+  .about-copy{ gap: calc(var(--mw) * 0.01316); }
+  /* Text ratios are trimmed ~5% below their exact desktop proportion —
+     word-wrap breaks at a different point at every width, so a
+     paragraph can pick up a whole extra line right around 760–809px
+     (this covers, e.g., an iPad Mini in portrait) even though the same
+     ratio fits everywhere else. This margin absorbs that without being
+     visibly different from the true proportion. */
+  .about-desc{ max-width: none; font-size: calc(var(--mw) * 0.01687); line-height: 1.44; }
+  .about-experience{ margin-top: calc(var(--mw) * 0.00526); }
+  .about-experience-label{ font-size: calc(var(--mw) * 0.01374); margin-bottom: calc(var(--mw) * 0.00395); }
+  .about-experience-value{ font-size: calc(var(--mw) * 0.0175); }
   .about-cta{
-    right: 10px;
-    bottom: 6px;
-    padding: 4px 8px;
-    font-size: 6px;
-    gap: 3px;
+    right: calc(var(--mw) * 0.05789);
+    bottom: calc(var(--mw) * 0.03158);
+    padding: calc(var(--mw) * 0.01579) calc(var(--mw) * 0.02895);
+    font-size: calc(var(--mw) * 0.01842);
+    gap: calc(var(--mw) * 0.01053);
   }
 }
 
