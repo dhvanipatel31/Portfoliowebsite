@@ -220,6 +220,7 @@ function initFlipCard(){
 // devices (no hover state to track) and under prefers-reduced-motion.
 function initFlipTilt(){
   const tilt = document.querySelector('.flip-tilt');
+  const card = tilt ? tilt.querySelector('.flip-card') : null;
   if(!tilt) return;
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if(!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -229,10 +230,19 @@ function initFlipTilt(){
   const EASED = 'transform 0.5s cubic-bezier(.22,1,.36,1)';
 
   function onEnter(){
+    // Tilting .flip-tilt (rotateX/Y) while .flip-card underneath already
+    // carries its own rotateY(180deg) combines into a single accumulated
+    // 3D matrix — and at least in some browsers that combination breaks
+    // backface-visibility, letting the front face show through (mirrored)
+    // on top of the back face while the mouse moves. The tilt was only
+    // ever meant for the resting front-facing card, so it's skipped
+    // entirely once flipped rather than trying to fix that interaction.
+    if(card && card.classList.contains('is-flipped')) return;
     tilt.classList.add('is-hovering');
     tilt.style.transition = INSTANT;
   }
   function onMove(e){
+    if(card && card.classList.contains('is-flipped')) return;
     const rect = tilt.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width;  // 0 (left) .. 1 (right)
     const py = (e.clientY - rect.top) / rect.height;   // 0 (top) .. 1 (bottom)
