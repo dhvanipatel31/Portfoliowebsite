@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Systems for Eyewear: Case Study by Dhvani Patel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy: #0E1828;
+    --navy-deep: #090F1A;
+    --cyan: #00D8FF;
+    --white: #FFFFFF;
+    --ink: #0E1828;
+    --muted-on-white: #5B6270;
+    --eyebrow: #3E63A0;
+    --muted-on-navy: rgba(255,255,255,0.72);
+    --card-dark: #1B2436;
+    --line-on-white: rgba(14,24,40,0.12);
+    --line-on-navy: rgba(255,255,255,0.14);
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --display: 'Plus Jakarta Sans', var(--sans);
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+    --container: 1160px;
+    --gutter: clamp(24px, 5vw, 64px);
+    --ease: cubic-bezier(.16,1,.3,1);
+  }
+  *{ box-sizing: border-box; margin: 0; padding: 0; }
+  html{ scroll-behavior: smooth; }
+  body{
+    font-family: var(--sans);
+    background: var(--white);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  img{ max-width: 100%; display: block; }
+  .wrap{ max-width: var(--container); margin: 0 auto; padding: 0 var(--gutter); }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  }
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px var(--gutter);
+    font-size: 13px; letter-spacing: 0.03em;
+    mix-blend-mode: difference;
+    pointer-events: none;
+  }
+  .topbar a{ pointer-events: auto; text-decoration: none; color: #fff; opacity: 0.85; transition: opacity 0.2s; }
+  .topbar a:hover{ opacity: 1; }
+  .pill-btn{
+    position: fixed; top: 64px; right: 20px; z-index: 1000;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 22px; border-radius: 100px;
+    background: rgba(14,24,40,0.6);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(240, 238, 231, 0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    color: #F0EEE7; font-family: var(--sans); font-size: 14px; font-weight: 600;
+    letter-spacing: -0.2px; text-decoration: none; pointer-events: auto;
+    transition: transform 0.25s var(--ease), background 0.25s var(--ease);
+  }
+  .pill-btn:hover{ transform: translateY(-2px); background: rgba(0,150,180,0.55); }
+
+  /* ---------- reveal animation ---------- */
+  .reveal{ opacity: 0; transform: translateY(28px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+  .reveal.is-visible{ opacity: 1; transform: translateY(0); }
+  .reveal-group .reveal:nth-child(1){ transition-delay: 0s; }
+  .reveal-group .reveal:nth-child(2){ transition-delay: 0.08s; }
+  .reveal-group .reveal:nth-child(3){ transition-delay: 0.16s; }
+  .reveal-group .reveal:nth-child(4){ transition-delay: 0.24s; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding: 150px var(--gutter) 96px;
+    background: linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    overflow: hidden;
+  }
+  .hero-inner{ max-width: var(--container); margin: 0 auto; }
+  .hero h1{ font-family: var(--display); font-weight: 800; font-size: clamp(34px,5.6vw,64px); letter-spacing: -0.02em; line-height: 1.12; margin-bottom: 26px; max-width: 900px; }
+  .hero h1 .accent{ color: var(--cyan); }
+  .hero p.tagline{ font-size: clamp(16px,1.8vw,19px); line-height: 1.55; max-width: 480px; color: var(--muted-on-navy); }
+
+  /* ---------- section basics ---------- */
+  section{ position: relative; }
+  .section-pad{ padding: 110px 0; }
+  .on-navy{ background: var(--navy); color: #fff; }
+  .eyebrow{
+    display: inline-block; font-family: var(--mono); font-size: 12.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--eyebrow); margin-bottom: 20px;
+  }
+  .on-navy .eyebrow{ color: var(--cyan); }
+  h2{ font-family: var(--display); font-weight: 800; font-size: clamp(26px,3.6vw,40px); line-height: 1.24; margin-bottom: 24px; max-width: 760px; letter-spacing: -0.01em; }
+  .lede{ font-size: 17px; line-height: 1.7; max-width: 700px; color: var(--muted-on-white); }
+  .on-navy .lede{ color: var(--muted-on-navy); }
+
+  /* ---------- stat row (01) ---------- */
+  .stats-row{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--line-on-white); }
+  .stat-num{ font-family: var(--display); font-weight: 800; font-size: 44px; color: var(--ink); display: flex; align-items: baseline; gap: 8px; }
+  .stat-num .stat-word{ font-size: 17px; font-weight: 700; color: var(--eyebrow); }
+  .stat p{ margin-top: 12px; font-size: 14.5px; color: var(--muted-on-white); line-height: 1.55; max-width: 260px; }
+
+  /* ---------- tag pill badges ---------- */
+  .tag-pill{
+    display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--cyan); border: 1px solid rgba(0,216,255,0.45); border-radius: 100px; padding: 6px 16px; margin-bottom: 18px;
+    transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
+  }
+
+  /* ---------- hover-lift visual container ---------- */
+  .visual-frame{
+    border-radius: 16px; overflow: hidden; position: relative;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.16);
+    transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .on-navy .visual-frame{ box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
+  .visual-frame:hover{ transform: translateY(-6px); box-shadow: 0 26px 54px rgba(0,0,0,0.22); }
+  .on-navy .visual-frame:hover{ box-shadow: 0 30px 64px rgba(0,0,0,0.55); }
+  .visual-frame img{ width: 100%; display: block; transition: transform 0.5s var(--ease); }
+  .visual-frame:hover img{ transform: scale(1.015); }
+
+  /* ---------- expand-to-lightbox (diagrams / system maps) ---------- */
+  .diagram-frame{ cursor: zoom-in; background: #fff; }
+  .diagram-frame.on-dark-img{ background: var(--navy); }
+  .mockup-expand{
+    position: absolute; top: 14px; right: 14px; width: 38px; height: 38px;
+    border-radius: 50%; border: 1px solid rgba(14,24,40,0.15);
+    background: rgba(255,255,255,0.92);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--navy); cursor: pointer;
+    opacity: 0; transform: scale(0.85);
+    transition: opacity 0.25s var(--ease), transform 0.25s var(--ease), background 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease);
+    z-index: 5;
+    backdrop-filter: blur(6px);
+  }
+  .mockup-expand svg{ width: 17px; height: 17px; }
+  .diagram-frame:hover .mockup-expand, .diagram-frame:focus-within .mockup-expand{ opacity: 1; transform: scale(1); }
+  @media (hover: none){ .mockup-expand{ opacity: 0.85; transform: scale(1); } }
+  .mockup-expand:hover{ background: var(--cyan); border-color: var(--cyan); color: var(--navy); }
+
+  .lightbox{
+    position: fixed; inset: 0; background: rgba(9,15,26,0.95);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease); padding: 56px 24px;
+  }
+  .lightbox.open{ opacity: 1; pointer-events: auto; }
+  .lightbox figure{ margin: 0; max-width: 1200px; text-align: center; }
+  .lightbox img{ max-width: 100%; max-height: 82vh; width: auto; border-radius: 6px; margin: 0 auto; box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+  .lightbox figcaption{ margin-top: 18px; font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.03em; color: rgba(255,255,255,0.7); }
+  .lightbox-close{
+    position: absolute; top: 24px; right: 28px; width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #fff; font-size: 1.5rem; line-height: 1;
+    cursor: pointer; transition: background 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+  .lightbox-close:hover{ background: rgba(255,255,255,0.12); transform: rotate(90deg); }
+
+  /* ---------- 02: research journey photo row ---------- */
+  .photo-row{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
+  .photo-item .visual-frame{ aspect-ratio: 1.72; }
+  .photo-item .visual-frame img{ width: 100%; height: 100%; object-fit: cover; }
+  .photo-item .tag-pill{ margin-top: 22px; }
+  .photo-item p{ font-size: 14.5px; color: var(--muted-on-navy); line-height: 1.6; max-width: 320px; }
+
+  /* ---------- 03: route map + two-col ---------- */
+  .route-visual{ margin-top: 56px; max-width: 900px; }
+  .two-col{ display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 48px; max-width: 900px; }
+  .two-col h4{ font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cyan); margin-bottom: 14px; }
+  .on-white .two-col h4, .two-col.on-white h4{ color: var(--eyebrow); }
+  .two-col p{ font-size: 15px; line-height: 1.65; color: var(--muted-on-navy); }
+  .two-col.on-white p{ color: var(--muted-on-white); }
+
+  /* ---------- diagram block, generic ---------- */
+  .diagram-block{ margin-top: 56px; }
+  .diagram-block.narrow{ max-width: 900px; }
+
+  /* ---------- 08 root cause note ---------- */
+  .note-block{ margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line-on-white); max-width: 760px; }
+  .note-block h4{ font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--eyebrow); margin-bottom: 14px; }
+  .note-block p{ font-size: 15.5px; line-height: 1.65; color: var(--muted-on-white); }
+
+  /* ---------- opportunity cards ---------- */
+  .cards-row{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-top: 56px; }
+  .opp-card{
+    background: var(--card-dark); border: 1px solid var(--line-on-navy); border-radius: 16px; padding: 32px;
+    transition: transform 0.35s var(--ease), border-color 0.35s var(--ease), background 0.35s var(--ease);
+  }
+  .opp-card:hover{ transform: translateY(-6px); border-color: rgba(0,216,255,0.4); background: #212B40; }
+  .opp-card .tag-pill{ margin-bottom: 20px; }
+  .opp-card h4{ font-family: var(--display); font-weight: 700; font-size: 20px; line-height: 1.3; margin-bottom: 12px; }
+  .opp-card p{ font-size: 14.5px; color: var(--muted-on-navy); line-height: 1.6; }
+
+  /* ---------- concept exploration image pairs ---------- */
+  .concept-pair{ display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 56px; align-items: start; }
+  .concept-pair .visual-frame img{ width: 100%; }
+
+  .kit-pair{ display: grid; grid-template-columns: 0.8fr 1fr; gap: 40px; margin-top: 64px; align-items: center; }
+  .kit-pair .visual-frame{ background: none; box-shadow: none; display: flex; align-items: center; justify-content: center; transition: transform 0.4s var(--ease); }
+  .kit-pair .visual-frame:hover{ box-shadow: none; transform: translateY(-6px) scale(1.02); }
+  .kit-pair .visual-frame img{ max-height: 380px; width: auto; margin: 0 auto; filter: drop-shadow(0 18px 26px rgba(0,0,0,0.5)); }
+
+  /* ---------- reflection card ---------- */
+  .reflection-card{
+    margin-top: 48px; padding: 40px; border-radius: 16px; background: #F7F8FA; border: 1px solid var(--line-on-white);
+    max-width: 760px; transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  }
+  .reflection-card:hover{ border-color: rgba(62,99,160,0.35); background: #F1F4F8; }
+  .reflection-card h4{ font-family: var(--display); font-weight: 700; font-size: 22px; margin-bottom: 16px; }
+  .reflection-card p{ font-size: 15.5px; color: var(--muted-on-white); line-height: 1.7; margin-bottom: 14px; }
+  .reflection-card p:last-child{ margin-bottom: 0; }
+
+  .footer{
+    background: var(--navy); padding: 40px var(--gutter);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 14px; color: var(--muted-on-navy);
+  }
+
+  .next-btn{
+    bottom: 28px; right: 28px; top: auto; padding: 16px 26px; font-size: 15px;
+    opacity: 0; pointer-events: none; transform: translateY(14px);
+    transition: opacity 0.35s var(--ease), transform 0.35s var(--ease), background 0.25s var(--ease);
+  }
+  .next-btn.is-visible{ opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+  @media (max-width: 900px){
+    .stats-row{ grid-template-columns: 1fr; gap: 32px; }
+    .photo-row{ grid-template-columns: 1fr; gap: 24px; }
+    .two-col{ grid-template-columns: 1fr; gap: 28px; }
+    .cards-row{ grid-template-columns: 1fr; gap: 24px; }
+    .concept-pair{ grid-template-columns: 1fr; gap: 28px; }
+    .kit-pair{ grid-template-columns: 1fr; gap: 28px; }
+    .pill-btn.back-btn{ top: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="#top">Dhvani Patel</a>
+  <span class="tag" style="color:#fff;opacity:0.7;">Systems for Eyewear &middot; Case Study</span>
+</div>
+<a class="pill-btn back-btn" href="projects.html">&larr; Back to Projects</a>
+<a class="pill-btn next-btn" id="nextProjectBtn" href="ac-remote-case-study.html">Next Project: AC Remote Redesign &rarr;</a>
+
+<div id="top"></div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <h1 class="reveal is-visible">Every pair of glasses is a <span class="accent">system</span>, not a product.</h1>
+    <p class="tagline reveal is-visible" style="transition-delay:0.1s;">A field study exploring the people, processes, and decisions behind every pair of spectacles.</p>
+  </div>
+</header>
+
+<!-- 01 THE PREMISE -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">01 &mdash; The Premise</span>
+    <h2 class="reveal">The invisible system behind every pair of glasses</h2>
+    <p class="lede reveal">Nobody buys a system, they buy a pair of glasses. Behind that purchase is a network of prescriptions, machines, technicians, and opticians working together to deliver a single outcome: clear vision.</p>
+    <p class="lede reveal" style="margin-top:18px;">This project explored the people and processes behind that journey. Rather than redesigning the product itself, we mapped the system that makes every pair of spectacles possible.</p>
+
+    <div class="stats-row reveal-group">
+      <div class="stat reveal">
+        <div class="stat-num">5<span class="stat-word">stops</span></div>
+        <p>Field locations mapped across Mumbai&rsquo;s eyewear supply chain.</p>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-num">4<span class="stat-word">groups</span></div>
+        <p>Distinct stakeholder groups tracked across the ecosystem.</p>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-num">1<span class="stat-word">tree</span></div>
+        <p>Root-cause map built around a single recurring strain: worker health.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 RESEARCH JOURNEY -->
+<section class="section-pad on-navy">
+  <div class="wrap">
+    <span class="eyebrow reveal">02 &mdash; Research Journey</span>
+    <h2 class="reveal">Following the product backward, not forward</h2>
+    <p class="lede reveal">Rather than starting where glasses are made, we began where they are bought. Each visit uncovered another layer of the system&mdash;from retail counters to assembly units and lens laboratories.</p>
+
+    <div class="photo-row reveal-group">
+      <div class="photo-item reveal">
+        <div class="visual-frame"><img src="eyewear_assets/onsite-photo.jpg" alt="Research team on site at an eyewear retail location"></div>
+        <span class="tag-pill">ON SITE</span>
+        <p>We observed the precision of lens fitting, where even the smallest error could affect the final product.</p>
+      </div>
+      <div class="photo-item reveal">
+        <div class="visual-frame"><img src="eyewear_assets/retail-shop-photo.jpg" alt="Interior of an optical retail shop with eyewear displays"></div>
+        <span class="tag-pill">RETAIL SHOP</span>
+        <p>We watched customers, opticians, and prescriptions come together in a series of rapid decisions.</p>
+      </div>
+      <div class="photo-item reveal">
+        <div class="visual-frame"><img src="eyewear_assets/lens-lab-photo.jpg" alt="Lens laboratory workstation with frames and tools"></div>
+        <span class="tag-pill">LENS LAB</span>
+        <p>We followed the manufacturing process to understand how raw lenses are shaped, finished, and prepared for assembly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 RESEARCH JOURNEY (route) -->
+<section class="section-pad on-navy" style="padding-top:0;">
+  <div class="wrap">
+    <span class="eyebrow reveal">03 &mdash; Research Journey</span>
+    <h2 class="reveal">A supply chain traced on foot, across the city</h2>
+
+    <div class="route-visual reveal">
+      <div class="visual-frame diagram-frame on-dark-img" id="route-mockup">
+        <img src="eyewear_assets/route-map.jpg" alt="Map tracing the eyewear supply chain route across Mumbai, from manufacturing to retail">
+        <button class="mockup-expand" aria-label="View the route map larger" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="two-col reveal-group">
+      <div class="reveal">
+        <h4>The Route</h4>
+        <p>We traced the journey from manufacturing to retail, mapping every stage behind a single pair of glasses.</p>
+      </div>
+      <div class="reveal">
+        <h4>Why It Mattered</h4>
+        <p>Each stop added time, coordination, and complexity, revealing how far a simple purchase really travels.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 UNDERSTANDING THE ECOSYSTEM -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">04 &mdash; Understanding the Ecosystem</span>
+    <h2 class="reveal">Four groups, one connected system</h2>
+    <p class="lede reveal">Every stakeholder plays a different role, but the final product depends on how they work together.</p>
+
+    <div class="diagram-block narrow reveal">
+      <div class="visual-frame diagram-frame" id="ecosystem-mockup" style="border:1px solid var(--line-on-white);">
+        <img src="eyewear_assets/ecosystem-diagram.png" alt="Stakeholder map showing manufacturers, retailer, customers, assembly units, optometrists, wholesalers, lens labs, and logistics">
+        <button class="mockup-expand" aria-label="View the ecosystem map larger" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 MAPPING THE SYSTEM: causal loop -->
+<section class="section-pad" style="padding-top:0;">
+  <div class="wrap">
+    <span class="eyebrow reveal">05 &mdash; Mapping the System</span>
+    <h2 class="reveal">Where the pressure actually travels</h2>
+    <p class="lede reveal">A causal loop diagram revealed how demand, production, and worker strain influence one another&mdash;showing where pressure builds across the system.</p>
+
+    <div class="diagram-block reveal">
+      <div class="visual-frame diagram-frame" id="causal-mockup" style="border:1px solid var(--line-on-white);">
+        <img src="eyewear_assets/causal-loop-diagram.png" alt="Causal loop diagram mapping reinforcing and balancing loops between demand, production, and worker strain">
+        <button class="mockup-expand" aria-label="View the causal loop diagram larger" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="two-col on-white reveal-group">
+      <div class="reveal">
+        <h4>Reinforcing Loops</h4>
+        <p>Growing demand increases production pressure, placing greater strain on the same workforce.</p>
+      </div>
+      <div class="reveal">
+        <h4>Balancing Loops</h4>
+        <p>As strain rises, errors and returns increase, naturally slowing the system.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 MAPPING THE SYSTEM: nodes -->
+<section class="section-pad" style="padding-top:0;">
+  <div class="wrap">
+    <span class="eyebrow reveal">06 &mdash; Mapping the System</span>
+    <h2 class="reveal">Five nodes, and the messages that pass between them</h2>
+    <p class="lede reveal">The system depends on information flowing between five key stakeholders. Every delay or misunderstanding affects the experience further downstream.</p>
+
+    <div class="diagram-block reveal">
+      <div class="visual-frame diagram-frame" id="nodes-mockup" style="border:1px solid var(--line-on-white);">
+        <img src="eyewear_assets/node-message-diagram.png" alt="Node diagram showing information exchanged between vision need, customer, retailer, manufacturing, social influence, and market affordability">
+        <button class="mockup-expand" aria-label="View the node diagram larger" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="two-col on-white reveal-group">
+      <div class="reveal">
+        <h4>The Bottleneck</h4>
+        <p>Most communication passes through a single relay point &mdash; the retailer.</p>
+      </div>
+      <div class="reveal">
+        <h4>The Opening</h4>
+        <p>Simplifying information flow reduces errors and improves coordination.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 KEY INSIGHTS -->
+<section class="section-pad" style="padding-top:0;">
+  <div class="wrap">
+    <span class="eyebrow reveal">07 &mdash; Key Insights</span>
+    <h2 class="reveal">What the people inside the system actually said</h2>
+    <p class="lede reveal">System maps reveal how the process works. Conversations reveal what it feels like to live inside it, through the people who build, sell, and rely on it every day.</p>
+
+    <div class="diagram-block reveal">
+      <div class="visual-frame diagram-frame" id="insights-mockup" style="border:1px solid var(--line-on-white);">
+        <img src="eyewear_assets/insights-collage.png" alt="Collage of field photos, worker quotes, and news clippings about the eyewear industry and eye-care gaps">
+        <button class="mockup-expand" aria-label="View the insights collage larger" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 ROOT CAUSE ANALYSIS -->
+<section class="section-pad" style="padding-top:0;">
+  <div class="wrap">
+    <span class="eyebrow reveal">08 &mdash; Root Cause Analysis</span>
+    <h2 class="reveal">One root, many consequences</h2>
+    <p class="lede reveal">Every issue we observed &mdash; fatigue, pain, errors, and attrition, led back to the same underlying cause: a system designed around output rather than worker well-being.</p>
+
+    <div class="diagram-block reveal">
+      <div class="visual-frame diagram-frame" id="tree-mockup" style="border:1px solid var(--line-on-white);">
+        <img src="eyewear_assets/root-cause-tree.png" alt="Root cause tree diagram tracing worker-health symptoms back to systemic causes like production targets and ergonomic design">
+        <button class="mockup-expand" aria-label="View the root cause tree larger" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="note-block reveal">
+      <h4>Why This Matters Beyond the Workshop</h4>
+      <p>Worker health, product quality, and customer trust are deeply connected. Improving one requires addressing the system behind them all.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 08 DESIGN OPPORTUNITIES -->
+<section class="section-pad on-navy">
+  <div class="wrap">
+    <span class="eyebrow reveal">08 &mdash; Design Opportunities</span>
+    <h2 class="reveal">Where the research pointed, not where we wanted it to</h2>
+    <p class="lede reveal">Rather than designing another product, the research uncovered opportunities to improve the system itself, from the assembly workspace to everyday eyewear care.</p>
+
+    <div class="cards-row reveal-group">
+      <div class="opp-card reveal">
+        <span class="tag-pill">OPPORTUNITY 01</span>
+        <h4>Redesign the workspace, not just the tool</h4>
+        <p>A better workspace can improve precision, comfort, and consistency.</p>
+      </div>
+      <div class="opp-card reveal">
+        <span class="tag-pill">OPPORTUNITY 02</span>
+        <h4>Close the gap between damage and repair</h4>
+        <p>Simple repair tools and guidance can help users address everyday eyewear issues sooner.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 CONCEPT EXPLORATION: workbench -->
+<section class="section-pad on-navy" style="padding-top:0;">
+  <div class="wrap">
+    <span class="eyebrow reveal">08 &mdash; Concept Exploration</span>
+    <h2 class="reveal">A workbench built around the body, not the task list</h2>
+    <p class="lede reveal">Rather than adding new tools, this concept redesigns the workspace itself, giving every tool a place and every movement a purpose.</p>
+
+    <div class="concept-pair reveal-group">
+      <div class="visual-frame reveal">
+        <img src="eyewear_assets/workbench-photo.jpg" alt="Close-up of a redesigned workbench pegboard with lens-fitting tools laid out">
+      </div>
+      <div class="visual-frame diagram-frame on-dark-img reveal" id="workbench-mockup">
+        <img src="eyewear_assets/workbench-diagram.png" alt="Annotated illustration of an ergonomic workbench with labeled posture supports, tool arms, and inspection surface">
+        <button class="mockup-expand" aria-label="View the workbench diagram larger" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 CONCEPT EXPLORATION: maintenance kit -->
+<section class="section-pad on-navy" style="padding-top:0;">
+  <div class="wrap">
+    <span class="eyebrow reveal">09 &mdash; Concept Exploration</span>
+    <h2 class="reveal">Maintenance that travels with the glasses</h2>
+    <p class="lede reveal">Small issues don&rsquo;t need to become major repairs. A portable maintenance kit enables quick fixes, helping users care for their eyewear wherever they are.</p>
+
+    <div class="kit-pair reveal-group">
+      <div class="visual-frame reveal">
+        <img src="eyewear_assets/maintenance-kit-closed.png" alt="Closed portable eyewear maintenance kit, capsule shaped">
+      </div>
+      <div class="visual-frame reveal">
+        <img src="eyewear_assets/maintenance-kit-open.png" alt="Open portable eyewear maintenance kit showing internal compartments">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 REFLECTION -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">10 &mdash; Reflection</span>
+    <h2 class="reveal">What systems thinking actually changed</h2>
+
+    <div class="reflection-card reveal">
+      <h4>Looking beyond the user</h4>
+      <p>Research became less about individual interactions and more about understanding how people, processes, and decisions connect.</p>
+      <p>Designing for systems means asking not only who benefits, but who bears the cost of every decision.</p>
+    </div>
+  </div>
+</section>
+
+<div class="footer">
+  <span>System Design &mdash; Case Study, 2026</span>
+  <span>Designed by Dhvani and team</span>
+</div>
+
+<!-- lightboxes -->
+<div class="lightbox" id="route-lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close" type="button">&times;</button>
+  <figure><img src="eyewear_assets/route-map.jpg" alt="Map tracing the eyewear supply chain route across Mumbai"><figcaption>The route &mdash; manufacturing to retail, traced on foot across Mumbai.</figcaption></figure>
+</div>
+<div class="lightbox" id="ecosystem-lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close" type="button">&times;</button>
+  <figure><img src="eyewear_assets/ecosystem-diagram.png" alt="Stakeholder ecosystem map"><figcaption>Four groups, one connected system.</figcaption></figure>
+</div>
+<div class="lightbox" id="causal-lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close" type="button">&times;</button>
+  <figure><img src="eyewear_assets/causal-loop-diagram.png" alt="Causal loop diagram"><figcaption>Where the pressure actually travels &mdash; the full causal loop diagram.</figcaption></figure>
+</div>
+<div class="lightbox" id="nodes-lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close" type="button">&times;</button>
+  <figure><img src="eyewear_assets/node-message-diagram.png" alt="Node diagram of information exchange between stakeholders"><figcaption>Five nodes, and the messages that pass between them.</figcaption></figure>
+</div>
+<div class="lightbox" id="insights-lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close" type="button">&times;</button>
+  <figure><img src="eyewear_assets/insights-collage.png" alt="Collage of field research quotes and clippings"><figcaption>What the people inside the system actually said.</figcaption></figure>
+</div>
+<div class="lightbox" id="tree-lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close" type="button">&times;</button>
+  <figure><img src="eyewear_assets/root-cause-tree.png" alt="Root cause analysis tree diagram"><figcaption>One root, many consequences.</figcaption></figure>
+</div>
+<div class="lightbox" id="workbench-lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close" type="button">&times;</button>
+  <figure><img src="eyewear_assets/workbench-diagram.png" alt="Annotated ergonomic workbench illustration"><figcaption>A workbench built around the body, not the task list.</figcaption></figure>
+</div>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('.reveal:not(.is-visible)');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('is-visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  els.forEach(function(el){ observer.observe(el); });
+
+  var nextBtn = document.getElementById('nextProjectBtn');
+  function checkScroll(){
+    var scrollEl = document.scrollingElement || document.documentElement;
+    var nearBottom = (window.innerHeight + window.scrollY) >= (scrollEl.scrollHeight - 200);
+    nextBtn.classList.toggle('is-visible', nearBottom);
+  }
+  window.addEventListener('scroll', checkScroll, { passive: true });
+  checkScroll();
+
+  function initExpandLightbox(containerId, lightboxId){
+    var container = document.getElementById(containerId);
+    if(!container) return;
+    var lightbox = document.getElementById(lightboxId);
+    var openBtn = container.querySelector('.mockup-expand');
+    function openLightbox(){ lightbox.classList.add('open'); lightbox.setAttribute('aria-hidden','false'); }
+    function closeLightbox(){ lightbox.classList.remove('open'); lightbox.setAttribute('aria-hidden','true'); }
+    if(openBtn) openBtn.addEventListener('click', function(e){ e.stopPropagation(); openLightbox(); });
+    container.addEventListener('click', openLightbox);
+    lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+    });
+  }
+
+  initExpandLightbox('route-mockup', 'route-lightbox');
+  initExpandLightbox('ecosystem-mockup', 'ecosystem-lightbox');
+  initExpandLightbox('causal-mockup', 'causal-lightbox');
+  initExpandLightbox('nodes-mockup', 'nodes-lightbox');
+  initExpandLightbox('insights-mockup', 'insights-lightbox');
+  initExpandLightbox('tree-mockup', 'tree-lightbox');
+  initExpandLightbox('workbench-mockup', 'workbench-lightbox');
+})();
+</script>
+
+</body>
+</html>

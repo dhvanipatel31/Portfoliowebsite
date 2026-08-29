@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Aquarium Monitoring System: Case Study by Dhvani Patel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F6FAFB;
+    --paper-deep: #EAF1F3;
+    --paper-deeper: #DEEAEC;
+    --paper-line: rgba(10,36,48,0.12);
+    --ink: #0C2530;
+    --ink-soft: #4C6670;
+    --ink-faint: #8CA3AA;
+    --deep: #08202E;
+    --deep-soft: #0F3145;
+    --deep-line: rgba(232,244,247,0.14);
+    --cream-on-dark: #EAF4F7;
+    --cream-on-dark-soft: rgba(234,244,247,0.68);
+    --teal: #1789A6;
+    --teal-deep: #0E6A83;
+    --teal-soft: rgba(23,137,166,0.10);
+    --coral: #E0704A;
+    --coral-soft: rgba(224,112,74,0.12);
+    --sea: #3C8C6E;
+    --display: 'Space Grotesk', 'Inter', sans-serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+    --container: 1140px;
+    --gutter: clamp(24px, 5vw, 64px);
+    --ease: cubic-bezier(.16,1,.3,1);
+  }
+  *{ box-sizing: border-box; margin: 0; padding: 0; }
+  html{ scroll-behavior: smooth; overflow-x: hidden; }
+  body{
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  img{ max-width: 100%; display: block; }
+  video{ max-width: 100%; display: block; }
+  .wrap{ max-width: var(--container); margin: 0 auto; padding: 0 var(--gutter); }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  }
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px var(--gutter);
+    font-size: 13px; letter-spacing: 0.03em;
+    mix-blend-mode: difference;
+    pointer-events: none;
+  }
+  .topbar a{ pointer-events: auto; text-decoration: none; color: #fff; opacity: 0.85; transition: opacity 0.2s; }
+  .topbar a:hover{ opacity: 1; }
+  .pill-btn{
+    position: fixed; top: 64px; right: 20px; z-index: 1000;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 22px; border-radius: 100px;
+    background: rgba(8,32,46,0.74);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(234,244,247,0.16);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+    color: #EAF4F7; font-family: var(--sans); font-size: 14px; font-weight: 600;
+    letter-spacing: -0.2px; text-decoration: none; pointer-events: auto;
+    transition: transform 0.25s var(--ease), background 0.25s var(--ease);
+  }
+  .pill-btn:hover{ transform: translateY(-2px); background: var(--teal); }
+  .next-btn{
+    top: auto; bottom: 28px; right: 28px; padding: 15px 24px; font-size: 14px;
+    opacity: 0; pointer-events: none; transform: translateY(14px);
+    transition: opacity 0.35s var(--ease), transform 0.35s var(--ease), background 0.25s var(--ease);
+  }
+  .next-btn.is-visible{ opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+  /* ---------- reveal animation ---------- */
+  .reveal{ opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+  .reveal.is-visible{ opacity: 1; transform: translateY(0); }
+  .reveal-group .reveal:nth-child(1){ transition-delay: 0s; }
+  .reveal-group .reveal:nth-child(2){ transition-delay: 0.09s; }
+  .reveal-group .reveal:nth-child(3){ transition-delay: 0.18s; }
+  .reveal-group .reveal:nth-child(4){ transition-delay: 0.27s; }
+  .reveal-group .reveal:nth-child(5){ transition-delay: 0.36s; }
+
+  /* ---------- type basics ---------- */
+  .eyebrow{
+    display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--teal-deep); margin-bottom: 18px;
+  }
+  .on-dark .eyebrow{ color: #7FD4E8; }
+  h2{ font-family: var(--display); font-weight: 600; font-size: clamp(24px,3.1vw,36px); line-height: 1.24; margin-bottom: 20px; max-width: 720px; letter-spacing: -0.01em; }
+  .lede{ font-size: 16.5px; line-height: 1.7; max-width: 640px; color: var(--ink-soft); }
+  .on-dark .lede{ color: var(--cream-on-dark-soft); }
+  .on-dark h2{ color: var(--cream-on-dark); }
+
+  section{ position: relative; }
+  .section-pad{ padding: 104px 0; }
+  .on-dark{ background: var(--deep); color: var(--cream-on-dark); }
+  .tint{ background: var(--paper-deep); }
+
+  /* ---------- image container + expand ---------- */
+  .img-frame{ position: relative; border-radius: 16px; overflow: hidden; cursor: zoom-in; }
+  .img-frame img{ width: 100%; transition: transform 0.5s var(--ease); }
+  .img-frame:hover img{ transform: scale(1.02); }
+  .expand-icon{
+    position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(8,32,46,0.66); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.25s var(--ease); color: #EAF4F7;
+  }
+  .img-frame:hover .expand-icon{ opacity: 1; }
+  .expand-icon svg{ width: 15px; height: 15px; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding: 168px var(--gutter) 88px;
+    background: var(--paper);
+    overflow: hidden;
+  }
+  .hero-inner{ max-width: var(--container); margin: 0 auto; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+  .hero-kicker{ font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal-deep); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .hero-kicker span{ padding: 5px 11px; background: var(--teal-soft); border-radius: 100px; }
+  .hero h1{
+    font-family: var(--display); font-weight: 700; font-size: clamp(34px,4.8vw,56px);
+    letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 22px; max-width: 620px;
+  }
+  .hero p.tagline{ font-size: clamp(15.5px,1.6vw,18px); line-height: 1.6; max-width: 460px; color: var(--ink-soft); margin-bottom: 36px; }
+  .hero-meta{ display: flex; gap: 40px; flex-wrap: wrap; padding-top: 26px; border-top: 1px solid var(--paper-line); }
+  .hero-meta-item .meta-label{ font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal-deep); margin-bottom: 8px; }
+  .hero-meta-item .meta-value{ font-size: 14px; color: var(--ink); max-width: 220px; }
+  .hero-visual{ border-radius: 20px; overflow: hidden; box-shadow: 0 30px 70px -30px rgba(8,32,46,0.35); }
+  .hero-visual img{ width: 100%; }
+
+  /* ---------- stat strip ---------- */
+  .stat-strip{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--paper-line); margin-top: 48px; border: 1px solid var(--paper-line); border-radius: 14px; overflow: hidden; }
+  .stat-cell{ background: var(--paper); padding: 26px 24px; }
+  .tint .stat-cell{ background: var(--paper-deep); }
+  .stat-num{ font-family: var(--display); font-weight: 700; font-size: 28px; color: var(--teal-deep); margin-bottom: 8px; }
+  .stat-cell p{ font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); }
+
+  /* ---------- video block ---------- */
+  .video-block{ margin-top: 44px; display: grid; grid-template-columns: 0.9fr 1.5fr; gap: 40px; align-items: start; }
+  .video-note{ display: flex; flex-direction: column; gap: 10px; }
+  .video-note .note-tag{ font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal-deep); }
+  .video-note p{ font-size: 14.5px; line-height: 1.6; color: var(--ink-soft); }
+  .video-wrap{ position: relative; border-radius: 18px; overflow: hidden; background: var(--deep); box-shadow: 0 24px 60px -28px rgba(8,32,46,0.4); max-width: 640px; }
+  .video-wrap video{ width: 100%; display: block; }
+  .video-wrap .play-hint{
+    position: absolute; bottom: 14px; left: 14px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(234,244,247,0.85); background: rgba(8,32,46,0.5); padding: 6px 10px; border-radius: 100px; pointer-events: none;
+    transition: opacity 0.3s var(--ease);
+  }
+  .video-wrap.is-playing .play-hint{ opacity: 0; }
+
+  /* ---------- fish health tree ---------- */
+  .fish-tree{ position: relative; margin-top: 44px; background: var(--paper); border: 1px solid var(--paper-line); border-radius: 18px; padding: 44px 44px 40px; overflow: hidden; }
+  .tree-svg{ position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .tree-body{ display: flex; align-items: center; gap: 40px; position: relative; z-index: 1; }
+  .tree-root{ font-family: var(--display); font-weight: 700; font-size: 13.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); white-space: nowrap; flex-shrink: 0; }
+  .tree-branches{ display: flex; flex-direction: column; gap: 28px; flex: 1; min-width: 0; }
+  .tree-branch{ display: flex; align-items: center; }
+  .branch-label{ font-family: var(--display); font-weight: 600; font-size: 15px; color: var(--ink); flex-shrink: 0; white-space: nowrap; }
+  .branch-connector{ flex: 0 0 auto; height: 1px; background: var(--paper-line); margin: 0 16px; }
+  .branch-connector.short{ width: 26px; }
+  .branch-connector.long{ width: 92px; }
+  .branch-items{ list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .branch-items li{ font-size: 14px; line-height: 1.3; color: var(--ink-soft); position: relative; padding-left: 15px; white-space: nowrap; }
+  .branch-items li::before{ content:''; position: absolute; left: 0; top: 7px; width: 5px; height: 5px; border-radius: 50%; background: var(--teal); }
+  @media (max-width: 700px){
+    .fish-tree{ padding: 32px 24px; }
+    .tree-svg{ display: none; }
+    .tree-body{ flex-direction: column; align-items: flex-start; gap: 24px; }
+    .tree-branches{ gap: 24px; width: 100%; }
+    .tree-branch{ flex-direction: column; align-items: flex-start; gap: 8px; }
+    .branch-connector{ display: none; }
+  }
+
+  /* ---------- monitor comparison ---------- */
+  .monitor-layout{ display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--paper-line); margin-top: 48px; border: 1px solid var(--paper-line); border-radius: 16px; overflow: hidden; }
+  .monitor-col{ background: var(--paper); padding: 34px 32px; }
+  .monitor-col.vision{ background: var(--teal-soft); }
+  .monitor-col .col-tag{ font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 18px; }
+  .monitor-col.vision .col-tag{ color: var(--teal-deep); }
+  .monitor-col ul{ list-style: none; display: flex; flex-direction: column; gap: 13px; }
+  .monitor-col li{ font-size: 15px; color: var(--ink); padding-left: 20px; position: relative; }
+  .monitor-col li::before{ content:''; position:absolute; left:0; top:8px; width:6px; height:6px; border-radius:50%; background: var(--ink-faint); }
+  .monitor-col.vision li::before{ background: var(--teal); }
+  .insight-callout{
+    margin-top: 40px; padding: 30px 32px; background: var(--deep); color: var(--cream-on-dark); border-radius: 16px; max-width: 780px;
+    font-family: var(--display); font-weight: 600; font-size: clamp(18px,2.2vw,23px); line-height: 1.4;
+  }
+  .insight-callout span{ color: #7FD4E8; }
+
+  /* ---------- pain point cards ---------- */
+  .pain-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--paper-line); margin-top: 52px; border: 1px solid var(--paper-line); }
+  .pain-item{ background: var(--paper); padding: 38px 34px; transition: background 0.35s var(--ease); }
+  .pain-item:hover{ background: var(--paper-deep); }
+  .pain-item .quote{ font-family: var(--display); font-weight: 600; font-size: 21px; line-height: 1.3; margin-bottom: 12px; color: var(--ink); }
+  .pain-item .quote::before{ content:'\201C'; color: var(--teal); }
+  .pain-item .quote::after{ content:'\201D'; color: var(--teal); }
+  .pain-item p{ font-size: 14.5px; line-height: 1.6; color: var(--ink-soft); max-width: 360px; }
+
+  /* ---------- opportunity ---------- */
+  .opportunity-layout{ display: grid; grid-template-columns: 1fr 0.8fr; gap: 48px; align-items: center; margin-top: 48px; }
+  .opportunity-text p.lede{ margin-bottom: 24px; }
+  .opportunity-visual .cap{ margin-top: 12px; font-size: 13px; color: var(--ink-faint); line-height: 1.5; }
+
+  /* ---------- system flow ---------- */
+  .flow-strip{ display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 40px 0 0; }
+  .flow-node{ font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 16px; border-radius: 100px; border: 1px solid var(--deep-line); color: var(--cream-on-dark-soft); }
+  .flow-node.hi{ background: var(--teal); color: #04222C; border-color: var(--teal); }
+  .flow-sep{ color: rgba(234,244,247,0.4); }
+  .light .flow-node{ border-color: var(--paper-line); color: var(--ink-soft); }
+  .light .flow-node.hi{ background: var(--teal); color: #fff; border-color: var(--teal); }
+  .light .flow-sep{ color: var(--ink-faint); }
+
+  /* ---------- hardware stack ---------- */
+  .hw-layout{ display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; margin-top: 48px; }
+  .hw-list{ display: flex; flex-direction: column; gap: 28px; }
+  .hw-item{ display: flex; gap: 18px; }
+  .hw-num{ font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--teal); flex-shrink: 0; padding-top: 2px; }
+  .hw-item h4{ font-family: var(--display); font-weight: 600; font-size: 18px; margin-bottom: 6px; }
+  .hw-item p{ font-size: 14px; line-height: 1.55; color: var(--ink-soft); }
+  .hw-photos{ display: grid; grid-template-columns: 1fr; gap: 18px; }
+  .hw-photos .cap{ margin-top: 10px; font-size: 12.5px; color: var(--ink-faint); line-height: 1.5; }
+
+  /* ---------- prototype gallery ---------- */
+  .proto-gallery{ margin-top: 48px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
+  .proto-large{ position: relative; border-radius: 18px; overflow: hidden; cursor: zoom-in; aspect-ratio: 4/3; }
+  .proto-large img{ width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+  .proto-large:hover img{ transform: scale(1.03); }
+  .proto-small-col{ display: grid; grid-template-rows: 1fr 1fr; gap: 20px; height: 100%; }
+  .proto-small{ position: relative; border-radius: 14px; overflow: hidden; cursor: zoom-in; aspect-ratio: 4/3; }
+  .proto-small img{ width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+  .proto-small:hover img{ transform: scale(1.05); }
+  .proto-cap{ margin-top: 20px; font-size: 13.5px; color: var(--ink-faint); line-height: 1.6; max-width: 640px; }
+
+  /* ---------- camera testing ---------- */
+  .camera-layout{ display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 44px; max-width: 860px; }
+  .camera-layout .cap{ font-size: 13.5px; color: var(--ink-faint); line-height: 1.6; max-width: 620px; }
+
+  /* ---------- behaviour detection cards ---------- */
+  .detect-grid{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 48px; }
+  .detect-card{
+    background: var(--deep-soft); border: 1px solid var(--deep-line); border-radius: 16px; padding: 26px 22px;
+    min-height: 210px; display: flex; flex-direction: column; justify-content: flex-end;
+    position: relative; overflow: hidden; transition: transform 0.35s var(--ease), background 0.35s var(--ease);
+  }
+  .detect-card:hover{ transform: translateY(-6px); background: var(--teal-deep); }
+  .detect-card .detect-tag{ font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: #7FD4E8; margin-bottom: 12px; }
+  .detect-card h4{ font-family: var(--display); font-weight: 600; font-size: 17px; margin-bottom: 12px; color: var(--cream-on-dark); line-height: 1.3; }
+  .detect-card p{
+    font-size: 13px; line-height: 1.55; color: rgba(234,244,247,0.78);
+    max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.4s var(--ease), opacity 0.3s var(--ease);
+  }
+  .detect-card:hover p{ max-height: 160px; opacity: 1; margin-top: 2px; }
+
+  /* ---------- mobile app phones ---------- */
+  .app-layout{ display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; margin-top: 48px; }
+  .app-features{ display: flex; flex-direction: column; gap: 24px; }
+  .app-feature h4{ font-family: var(--display); font-weight: 600; font-size: 17px; margin-bottom: 6px; }
+  .app-feature p{ font-size: 14px; line-height: 1.55; color: var(--ink-soft); }
+  .phones-row{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .phone-item{ display: flex; flex-direction: column; gap: 10px; }
+  .phone-frame{ border-radius: 18px; overflow: hidden; position: relative; cursor: zoom-in; box-shadow: 0 20px 44px -22px rgba(8,32,46,0.3); }
+  .phone-frame img{ width: 100%; transition: transform 0.4s var(--ease); }
+  .phone-frame:hover img{ transform: scale(1.04); }
+  .phone-cap{ font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.04em; text-align: center; color: var(--ink-faint); }
+  .app-journey{ margin-top: 44px; }
+
+  /* ---------- solution ---------- */
+  .solution-intro{ max-width: 720px; margin-bottom: 44px; }
+  .solution-video-wrap{ border-radius: 22px; overflow: hidden; background: var(--deep); box-shadow: 0 40px 90px -34px rgba(8,32,46,0.5); position: relative; max-width: 920px; margin: 0 auto; }
+  .solution-video-wrap video{ width: 100%; display: block; }
+  .solution-video-wrap .play-hint{
+    position: absolute; bottom: 18px; left: 18px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(234,244,247,0.85); background: rgba(8,32,46,0.5); padding: 7px 12px; border-radius: 100px; pointer-events: none;
+    transition: opacity 0.3s var(--ease);
+  }
+  .solution-video-wrap.is-playing .play-hint{ opacity: 0; }
+
+  /* ---------- final system ---------- */
+  .final-flow{ margin-top: 48px; }
+  .final-row{ display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .final-node{ flex: 1; min-width: 110px; text-align: center; }
+  .final-node .node-label{ font-family: var(--display); font-weight: 600; font-size: 16px; color: var(--ink); margin-bottom: 6px; }
+  .final-node .node-sub{ font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+  .final-line{ flex: 0 0 auto; width: clamp(24px, 6vw, 70px); height: 1px; background: var(--paper-line); position: relative; overflow: hidden; }
+  .final-line::after{ content:''; position:absolute; inset:0; background: var(--teal); transform: scaleX(0); transform-origin: left; transition: transform 1.1s var(--ease); }
+  .final-flow.is-visible .final-line::after{ transform: scaleX(1); }
+
+  /* ---------- impact / phases ---------- */
+  .phase-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 48px; }
+  .phase-card{ background: var(--paper); border: 1px solid var(--paper-line); border-radius: 16px; padding: 32px 30px; transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease); }
+  .phase-card:hover{ transform: translateY(-4px); box-shadow: 0 24px 48px -28px rgba(8,32,46,0.25); }
+  .phase-tag{ font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal-deep); margin-bottom: 14px; display: block; }
+  .phase-card h4{ font-family: var(--display); font-weight: 600; font-size: 19px; margin-bottom: 10px; }
+  .phase-card p{ font-size: 14.5px; line-height: 1.6; color: var(--ink-soft); }
+  .impact-note{ margin-top: 32px; font-size: 13.5px; color: var(--ink-faint); max-width: 640px; line-height: 1.6; }
+
+  /* ---------- closing ---------- */
+  .closing{ padding: 128px 0 100px; }
+  .closing .wrap{ max-width: 760px; }
+  .closing h2{ font-family: var(--display); font-weight: 600; font-size: clamp(26px,3.4vw,38px); line-height: 1.32; max-width: 100%; }
+  .closing p{ font-size: 16px; line-height: 1.75; color: var(--cream-on-dark-soft); margin-top: 22px; }
+
+  /* ---------- lightbox ---------- */
+  .lightbox{
+    position: fixed; inset: 0; background: rgba(6,18,24,0.95);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease); padding: 56px 24px;
+  }
+  .lightbox.open{ opacity: 1; pointer-events: auto; }
+  .lightbox figure{ margin: 0; max-width: 1000px; text-align: center; }
+  .lightbox img{ max-width: 100%; max-height: 80vh; width: auto; border-radius: 8px; margin: 0 auto; box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+  .lightbox figcaption{ margin-top: 18px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.03em; color: rgba(234,244,247,0.7); }
+  .lightbox-close{
+    position: absolute; top: 24px; right: 28px; width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid rgba(234,244,247,0.4); background: transparent; color: #EAF4F7; font-size: 1.5rem; line-height: 1;
+    cursor: pointer; transition: background 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+  .lightbox-close:hover{ background: rgba(234,244,247,0.12); transform: rotate(90deg); }
+
+  .footer{
+    background: var(--deep); padding: 40px var(--gutter);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 13.5px; color: var(--cream-on-dark-soft); font-family: var(--mono);
+  }
+
+  @media (max-width: 980px){
+    .hero-inner{ grid-template-columns: 1fr; }
+    .hero-visual{ order: -1; }
+    .stat-strip{ grid-template-columns: 1fr; }
+    .video-block{ grid-template-columns: 1fr; gap: 24px; }
+    .monitor-layout{ grid-template-columns: 1fr; }
+    .pain-grid{ grid-template-columns: 1fr; }
+    .opportunity-layout{ grid-template-columns: 1fr; }
+    .hw-layout{ grid-template-columns: 1fr; }
+    .proto-gallery{ grid-template-columns: 1fr; }
+    .proto-large{ min-height: 320px; }
+    .proto-small-col{ grid-template-rows: 1fr; grid-template-columns: 1fr 1fr; }
+    .detect-grid{ grid-template-columns: 1fr 1fr; }
+    .app-layout{ grid-template-columns: 1fr; }
+    .phones-row{ grid-template-columns: repeat(3, 1fr); }
+    .phase-grid{ grid-template-columns: 1fr; }
+    .final-row{ flex-direction: column; }
+    .final-line{ width: 1px; height: 26px; }
+    .final-line::after{ transform: scaleY(0); }
+    .final-flow.is-visible .final-line::after{ transform: scaleY(1); }
+  }
+  @media (max-width: 640px){
+    .hero-meta{ gap: 26px; }
+    .detect-grid{ grid-template-columns: 1fr 1fr; }
+    .phones-row{ grid-template-columns: 1fr 1fr; }
+    .phones-row .phone-item:nth-child(3){ grid-column: span 2; max-width: 220px; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="#top">Dhvani Patel</a>
+  <span class="tag" style="color:#fff;opacity:0.7;">Home Aquarium Monitoring System &middot; Case Study</span>
+</div>
+<a class="pill-btn back-btn" href="projects.html">&larr; Back to Projects</a>
+<a class="pill-btn next-btn" id="nextProjectBtn" href="walletease-case-study.html">Next Project: Walletease &rarr;</a>
+
+<div id="top"></div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-kicker reveal is-visible"><span>IoT</span><span>Computer Vision</span><span>Physical Computing</span></div>
+      <h1 class="reveal is-visible">Home Aquarium Monitoring System</h1>
+      <p class="tagline reveal is-visible" style="transition-delay:0.1s;">Intelligent behavioural monitoring for healthier fish, smarter care, and peace of mind.</p>
+      <div class="hero-meta reveal is-visible" style="transition-delay:0.2s;">
+        <div class="hero-meta-item">
+          <div class="meta-label">Focus</div>
+          <div class="meta-value">Behavioural monitoring for home aquariums</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="meta-label">System</div>
+          <div class="meta-value">Camera hardware &middot; edge AI &middot; companion app</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual reveal is-visible" style="transition-delay:0.15s;">
+      <img src="iot_assets/hero-camera-rig-on-tank.jpg" alt="The camera prototype clamped to the edge of a test tank, observing fish among gravel and plants">
+    </div>
+  </div>
+</header>
+
+<!-- THE CONTEXT -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">The Context</span>
+    <h2 class="reveal">Rethinking how an aquarium gets watched over.</h2>
+    <p class="lede reveal">This project explored how a home aquarium could be monitored more intelligently, combining fish behaviour, camera-based observation, AI analysis, and mobile alerts into a single system, rather than leaving fish health to occasional glances and guesswork.</p>
+  </div>
+</section>
+
+<!-- THE PROBLEM -->
+<section class="section-pad tint">
+  <div class="wrap">
+    <span class="eyebrow reveal">The Problem</span>
+    <h2 class="reveal">Aquarium care is still mostly manual and reactive.</h2>
+    <p class="lede reveal">Aquarium owners often struggle to identify early signs of illness, stress, aggression, or abnormal behaviour in their fish. Because monitoring is largely manual and reactive, health issues are often discovered too late, leading to poor fish welfare and preventable losses.</p>
+
+    <div class="stat-strip reveal-group">
+      <div class="stat-cell reveal"><div class="stat-num">60%</div><p>of fish deaths are preventable with early detection of behavioural changes.</p></div>
+      <div class="stat-cell reveal"><div class="stat-num">3+</div><p>behavioural signals typically precede visible illness, but go unobserved by owners.</p></div>
+      <div class="stat-cell reveal"><div class="stat-num">24/7</div><p>monitoring gap: no affordable consumer solution currently offers continuous observation.</p></div>
+    </div>
+
+    <div class="video-block">
+      <div class="video-note reveal">
+        <span class="note-tag">Problem statement</span>
+        <p>This video communicates the problem I was exploring, told from an aquarium owner's point of view.</p>
+      </div>
+      <div class="video-wrap reveal" id="problemVideoWrap">
+        <video id="problemVideo" playsinline poster="iot_assets/poster-problem.jpg" controls>
+          <source src="iot_assets/problem%20animation-2.mp4" type="video/mp4">
+        </video>
+        <span class="play-hint">Tap to play</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- UNDERSTANDING FISH HEALTH -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">Research</span>
+    <h2 class="reveal">Before narrowing the opportunity, I mapped what actually drives fish health.</h2>
+    <p class="lede reveal">Fish health sits at the intersection of behaviour, water quality, human care habits, and environment. Laying this out first made it clear how many overlapping factors an owner is expected to track on their own, and where a system could realistically help.</p>
+
+    <div class="fish-tree reveal" id="fishTree">
+      <svg class="tree-svg" id="treeLines" aria-hidden="true"></svg>
+      <div class="tree-body">
+        <div class="tree-root">Health of Fishes</div>
+        <div class="tree-branches">
+          <div class="tree-branch near">
+            <span class="branch-label">Behaviour</span>
+            <span class="branch-connector short"></span>
+            <ul class="branch-items">
+              <li>Swimming</li><li>Inactivity</li><li>Gasping</li><li>Clustering</li>
+            </ul>
+          </div>
+          <div class="tree-branch far">
+            <span class="branch-label">Water quality</span>
+            <span class="branch-connector long"></span>
+            <ul class="branch-items">
+              <li>Ph levels</li><li>Ammonia</li><li>Oxygen</li><li>Turbidity</li>
+            </ul>
+          </div>
+          <div class="tree-branch near">
+            <span class="branch-label">Human factors</span>
+            <span class="branch-connector short"></span>
+            <ul class="branch-items">
+              <li>Over feeding</li><li>Negligence</li><li>Travel</li><li>Maintenance</li>
+            </ul>
+          </div>
+          <div class="tree-branch far">
+            <span class="branch-label">Environment</span>
+            <span class="branch-connector long"></span>
+            <ul class="branch-items">
+              <li>Temperature</li><li>Lighting</li><li>Algae growth</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT CAN WE MONITOR -->
+<section class="section-pad tint">
+  <div class="wrap">
+    <span class="eyebrow reveal">The Insight</span>
+    <h2 class="reveal">Two different things you can monitor.</h2>
+    <p class="lede reveal">Water chemistry already has solutions. Behaviour did not.</p>
+
+    <div class="monitor-layout reveal-group">
+      <div class="monitor-col reveal">
+        <div class="col-tag">Already possible &middot; water chemistry</div>
+        <ul>
+          <li>pH</li>
+          <li>Ammonia</li>
+          <li>Nitrates</li>
+          <li>Dissolved oxygen</li>
+        </ul>
+      </div>
+      <div class="monitor-col vision reveal">
+        <div class="col-tag">Possible through vision &middot; behaviour</div>
+        <ul>
+          <li>Feeding activity</li>
+          <li>Swimming patterns</li>
+          <li>Aggression</li>
+          <li>Inactivity</li>
+          <li>Surface gasping</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight-callout reveal">Behaviour acts as a <span>visible indicator</span> of underlying health issues.</div>
+  </div>
+</section>
+
+<!-- RESEARCH + PAIN POINTS -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">User Research</span>
+    <h2 class="reveal">Four pain points kept surfacing.</h2>
+
+    <div class="pain-grid reveal-group">
+      <div class="pain-item reveal">
+        <div class="quote">I don't know what's normal</div>
+        <p>Owners struggle to distinguish healthy behaviour from early warning signs.</p>
+      </div>
+      <div class="pain-item reveal">
+        <div class="quote">I can't watch all the time</div>
+        <p>Work, travel, and sleep create blind spots where critical events occur unnoticed.</p>
+      </div>
+      <div class="pain-item reveal">
+        <div class="quote">I notice too late</div>
+        <p>By the time symptoms are visible, treatment is costly and often unsuccessful.</p>
+      </div>
+      <div class="pain-item reveal">
+        <div class="quote">Existing tools are basic</div>
+        <p>Thermometers and pH strips measure water, not fish behaviour or wellbeing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE OPPORTUNITY -->
+<section class="section-pad tint">
+  <div class="wrap">
+    <span class="eyebrow reveal">The Opportunity</span>
+    <div class="opportunity-layout">
+      <div class="opportunity-text">
+        <h2 class="reveal">Not just monitoring the aquarium. Monitoring the fish.</h2>
+        <p class="lede reveal">The opportunity was not simply to monitor the aquarium. It was to continuously observe fish behaviour and translate abnormal patterns into something an owner could understand and act on.</p>
+      </div>
+      <div class="opportunity-visual reveal">
+        <div class="img-frame" data-lightbox-src="iot_assets/diagram-exploring-solutions.png" data-lightbox-caption="Exploring possible solutions, from smart water sensors to a wearable fish tag, before converging on continuous, AI-powered behaviour monitoring.">
+          <img src="iot_assets/diagram-exploring-solutions.png" alt="Board exploring six possible solution directions before converging on an AI-powered behaviour monitoring system">
+          <span class="expand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></span>
+        </div>
+        <p class="cap">Six directions considered, from smart water sensors to a wearable fish tag, before the brief converged here: instead of monitoring the environment alone, monitor the fish themselves.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SYSTEM THINKING -->
+<section class="section-pad on-dark">
+  <div class="wrap">
+    <span class="eyebrow reveal">System Thinking</span>
+    <h2 class="reveal">From tank to owner, in four parts.</h2>
+    <p class="lede reveal">A camera in the tank feeds the backend, the backend runs inference and stores history, the app surfaces it, and the owner closes the loop by acting on what they see.</p>
+
+    <div class="flow-strip reveal">
+      <span class="flow-node hi">Fish Tank Environment</span><span class="flow-sep">&rarr;</span>
+      <span class="flow-node">Backend Cloud Storage</span><span class="flow-sep">&rarr;</span>
+      <span class="flow-node">Mobile Application</span><span class="flow-sep">&rarr;</span>
+      <span class="flow-node">Owner / Family</span>
+    </div>
+
+    <div class="img-frame reveal" style="margin-top:40px;" data-lightbox-src="iot_assets/diagram-system-architecture.png" data-lightbox-caption="Aqua Lens AI System Architecture: fish tank environment, backend cloud storage, mobile application, and owner or family, connected in a loop.">
+      <img src="iot_assets/diagram-system-architecture.png" alt="Aqua Lens AI system architecture diagram showing the fish tank, backend cloud storage, mobile app, and owner in a loop">
+      <span class="expand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></span>
+    </div>
+  </div>
+</section>
+
+<!-- HARDWARE + AI WORKFLOW -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">Hardware &amp; AI Workflow</span>
+    <h2 class="reveal">Physical computing, not just an app.</h2>
+
+    <div class="hw-layout">
+      <div class="hw-list reveal-group">
+        <div class="hw-item reveal">
+          <span class="hw-num">01</span>
+          <div><h4>ESP32-S3 + OV2640 camera</h4><p>A low-power, WiFi-enabled board with a 2MP camera for continuous tank observation.</p></div>
+        </div>
+        <div class="hw-item reveal">
+          <span class="hw-num">02</span>
+          <div><h4>Edge inference engine</h4><p>A lightweight CNN model runs on-device, detecting movement patterns and behavioural anomalies.</p></div>
+        </div>
+        <div class="hw-item reveal">
+          <span class="hw-num">03</span>
+          <div><h4>Mobile app, iOS / Android</h4><p>Real-time feed, push alerts, behavioural reports, and historical trend visualisation.</p></div>
+        </div>
+      </div>
+      <div class="hw-photos reveal-group">
+        <div class="img-frame reveal" data-lightbox-src="iot_assets/prototype-camera-housing.jpg" data-lightbox-caption="The 3D-printed camera housing built to hold the ESP32-S3 and OV2640 module above the tank.">
+          <img src="iot_assets/prototype-camera-housing.jpg" alt="3D-printed honeycomb camera housing holding the ESP32-S3 and OV2640 camera module">
+          <span class="expand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></span>
+        </div>
+        <p class="cap">The camera module's 3D-printed housing, designed to mount above a tank while keeping the electronics dry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REAL PROJECT / PROTOTYPE DOCUMENTATION -->
+<section class="section-pad tint">
+  <div class="wrap">
+    <span class="eyebrow reveal">Prototype</span>
+    <h2 class="reveal">Testing on a physical bench rig.</h2>
+
+    <div class="proto-gallery reveal-group">
+      <div class="proto-large reveal" data-lightbox-src="iot_assets/prototype-tank-02.jpg" data-lightbox-caption="The bench-test tank used during development, with toy fish standing in for live subjects while the detection pipeline was tuned.">
+        <img src="iot_assets/prototype-tank-02.jpg" alt="Overhead view of the bench-test tank with coloured gravel, plastic plants, and toy fish">
+      </div>
+      <div class="proto-small-col">
+        <div class="proto-small reveal" data-lightbox-src="iot_assets/prototype-tank-01.jpg" data-lightbox-caption="Close view of the test tank's gravel bed and plants.">
+          <img src="iot_assets/prototype-tank-01.jpg" alt="Close-up of the test tank's coloured gravel and plastic plants">
+        </div>
+        <div class="proto-small reveal" data-lightbox-src="iot_assets/prototype-tank-04.jpg" data-lightbox-caption="Detail of the toy fish and gravel used to test framing and colour contrast for detection.">
+          <img src="iot_assets/prototype-tank-04.jpg" alt="Detail shot of toy fish and coloured gravel in the test tank">
+        </div>
+      </div>
+    </div>
+    <p class="proto-cap">Before working with live fish, the tank and detection logic were tested on this bench rig, a small bowl with coloured gravel and toy fish standing in for the real thing. It's a student prototype, and it looks like one: the goal at this stage was validating camera framing, contrast, and the detection pipeline, not final production quality.</p>
+  </div>
+</section>
+
+<!-- CAMERA / TESTING -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">Camera &amp; Testing</span>
+    <h2 class="reveal">Calibrating the camera for continuous observation.</h2>
+    <div class="camera-layout">
+      <div class="img-frame reveal" data-lightbox-src="iot_assets/camera-testing-laptop.jpg" data-lightbox-caption="Testing the ESP32-S3 / OV2640 camera feed and settings on a laptop, adjusting exposure, gain, and white balance for the tank environment.">
+        <img src="iot_assets/camera-testing-laptop.jpg" alt="Laptop screen showing the OV2640 camera settings panel next to a live camera feed, during camera testing">
+        <span class="expand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></span>
+      </div>
+      <p class="cap reveal">The camera was tested and calibrated for continuous tank observation and system input, tuning exposure and image settings on the live feed before it became input to the detection pipeline.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BEHAVIOUR DETECTION LOGIC -->
+<section class="section-pad on-dark">
+  <div class="wrap">
+    <span class="eyebrow reveal">Behaviour Detection Logic</span>
+    <h2 class="reveal">Detection engines, each tuned to a specific welfare signal.</h2>
+    <p class="lede reveal">Hover each card for how it works.</p>
+
+    <div class="detect-grid reveal-group">
+      <div class="detect-card reveal">
+        <div class="detect-tag">Feeding</div>
+        <h4>Feeding Detection</h4>
+        <p>Tracks surface activity spikes and rapid movement clusters during feeding windows. Confirms food consumption and flags skipped meals.</p>
+      </div>
+      <div class="detect-card reveal">
+        <div class="detect-tag">Aggression</div>
+        <h4>Aggression &amp; Bullying</h4>
+        <p>Detects chasing patterns, cornering behaviour, and sustained proximity conflicts. Alerts owners before physical harm occurs.</p>
+      </div>
+      <div class="detect-card reveal">
+        <div class="detect-tag">Stillness</div>
+        <h4>Inactivity Monitoring</h4>
+        <p>Identifies prolonged stillness or abnormal hiding, a signal that often precedes a more serious welfare issue.</p>
+      </div>
+      <div class="detect-card reveal">
+        <div class="detect-tag">Illness</div>
+        <h4>Detection of Infections</h4>
+        <p>Flags potential illness, oxygen deprivation, or environmental stress associated with prolonged stillness or abnormal hiding.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MOBILE APP ECOSYSTEM -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">Mobile App Ecosystem</span>
+    <h2 class="reveal">What the owner actually sees.</h2>
+
+    <div class="app-layout">
+      <div class="app-features reveal-group">
+        <div class="app-feature reveal">
+          <h4>Live Camera Feed</h4>
+          <p>Stream directly from the ESP32-S3, accessible anywhere.</p>
+        </div>
+        <div class="app-feature reveal">
+          <h4>Instant Alerts</h4>
+          <p>Push notifications for aggression, inactivity, or missed feeding events.</p>
+        </div>
+        <div class="app-feature reveal">
+          <h4>Daily Health Report</h4>
+          <p>Automated summaries of activity levels, feeding consistency, and behavioural trends.</p>
+        </div>
+        <div class="app-feature reveal">
+          <h4>Historical Insights</h4>
+          <p>Weekly and monthly charts revealing long-term patterns and early-warning trends.</p>
+        </div>
+      </div>
+
+      <div class="phones-row reveal-group">
+        <div class="phone-item reveal">
+          <div class="phone-frame" data-lightbox-src="iot_assets/app-home.png" data-lightbox-caption="Home screen: a plain-language status check on the fish.">
+            <img src="iot_assets/app-home.png" alt="Aqua Lens AI app home screen showing 'Your fish are healthy'">
+          </div>
+          <span class="phone-cap">Home</span>
+        </div>
+        <div class="phone-item reveal">
+          <div class="phone-frame" data-lightbox-src="iot_assets/app-daily-report.png" data-lightbox-caption="Daily report: today's timeline alongside yesterday's flagged issue.">
+            <img src="iot_assets/app-daily-report.png" alt="Aqua Lens AI app daily report screen with today's timeline and a fungal growth alert">
+          </div>
+          <span class="phone-cap">Daily Report</span>
+        </div>
+        <div class="phone-item reveal">
+          <div class="phone-frame" data-lightbox-src="iot_assets/app-alert-detail.png" data-lightbox-caption="Alert detail: the AI's observation, the likely cause, and a suggested next step.">
+            <img src="iot_assets/app-alert-detail.png" alt="Aqua Lens AI app alert detail screen showing an AI observation of fungal growth with possible causes and next steps">
+          </div>
+          <span class="phone-cap">Alert Detail</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-journey">
+      <div class="flow-strip light reveal">
+        <span class="flow-node">Camera observes</span><span class="flow-sep">&rarr;</span>
+        <span class="flow-node">AI interprets</span><span class="flow-sep">&rarr;</span>
+        <span class="flow-node">System detects behaviour</span><span class="flow-sep">&rarr;</span>
+        <span class="flow-node hi">Owner receives useful information</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="section-pad tint">
+  <div class="wrap">
+    <span class="eyebrow reveal">The Solution</span>
+    <div class="solution-intro">
+      <h2 class="reveal">Aqua Lens AI: a system that watches so owners don't have to.</h2>
+      <p class="lede reveal">Bringing the camera, the edge model, and the app together produced a system that observes fish behaviour continuously and turns what it sees into alerts, reports, and insight an owner can actually act on.</p>
+    </div>
+    <div class="solution-video-wrap reveal" id="solutionVideoWrap">
+      <video id="solutionVideo" playsinline poster="iot_assets/poster-solution.jpg" controls>
+        <source src="iot_assets/solution%20animation.mp4" type="video/mp4">
+      </video>
+      <span class="play-hint">Tap to play</span>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL SYSTEM -->
+<section class="section-pad">
+  <div class="wrap">
+    <span class="eyebrow reveal">The Final System</span>
+    <h2 class="reveal">Fish to owner, closing the loop.</h2>
+    <div class="final-flow" id="finalFlow">
+      <div class="final-row">
+        <div class="final-node"><div class="node-label">Fish</div><div class="node-sub">Behaviour</div></div>
+        <div class="final-line"></div>
+        <div class="final-node"><div class="node-label">Camera</div><div class="node-sub">ESP32-S3</div></div>
+        <div class="final-line"></div>
+        <div class="final-node"><div class="node-label">AI Detection</div><div class="node-sub">Edge inference</div></div>
+        <div class="final-line"></div>
+        <div class="final-node"><div class="node-label">Mobile App</div><div class="node-sub">Aqua Lens AI</div></div>
+        <div class="final-line"></div>
+        <div class="final-node"><div class="node-label">Owner</div><div class="node-sub">Acts on it</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT / WHAT'S NEXT -->
+<section class="section-pad tint">
+  <div class="wrap">
+    <span class="eyebrow reveal">Impact &amp; What's Next</span>
+    <h2 class="reveal">Where this could go from here.</h2>
+    <div class="phase-grid reveal-group">
+      <div class="phase-card reveal">
+        <span class="phase-tag">Phase 1 &middot; MVP</span>
+        <h4>Continuous monitoring</h4>
+        <p>An ESP32-S3 prototype with feeding and inactivity detection, plus basic mobile alerts, always-on observation with zero extra effort from the owner.</p>
+      </div>
+      <div class="phase-card reveal">
+        <span class="phase-tag">Phase 2 &middot; Intelligence</span>
+        <h4>Four behaviour engines</h4>
+        <p>Feeding, aggression, inactivity, and infections, detected automatically as the AI analysis layer expands beyond the MVP.</p>
+      </div>
+    </div>
+    <p class="impact-note">These are the intended next steps for the project, not outcomes that have been validated in a real deployment yet.</p>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section class="closing on-dark">
+  <div class="wrap">
+    <span class="eyebrow reveal">Reflection</span>
+    <h2 class="reveal">A design exploration into proactive fish care.</h2>
+    <p class="reveal">This project was a design exploration into how computer vision and behavioural monitoring could make aquarium care more proactive, and less dependent on constant manual observation. It moved through physical computing, on-device AI, and mobile design as one connected system, built and tested end to end as a working student prototype.</p>
+  </div>
+</section>
+
+<div class="footer">
+  <span>Home Aquarium Monitoring System, 2026</span>
+  <span>Designed by Dhvani Patel</span>
+</div>
+
+<!-- lightbox -->
+<div class="lightbox" id="genericLightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close" type="button">&times;</button>
+  <figure><img id="lightboxImg" src="" alt=""><figcaption id="lightboxCap"></figcaption></figure>
+</div>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('.reveal:not(.is-visible)');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('is-visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  els.forEach(function(el){ observer.observe(el); });
+
+  var finalFlow = document.getElementById('finalFlow');
+  if(finalFlow){
+    var flowObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ finalFlow.classList.add('is-visible'); flowObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.3 });
+    flowObs.observe(finalFlow);
+  }
+
+  // fish health tree: draw connector lines from the root to each branch label
+  var treeWrap = document.getElementById('fishTree');
+  var treeSvg = document.getElementById('treeLines');
+  function drawTree(){
+    if(!treeWrap || !treeSvg || window.innerWidth <= 700) return;
+    var root = treeWrap.querySelector('.tree-root');
+    var labels = treeWrap.querySelectorAll('.branch-label');
+    var wrapRect = treeWrap.getBoundingClientRect();
+    if(wrapRect.width === 0) return;
+    treeSvg.setAttribute('width', wrapRect.width);
+    treeSvg.setAttribute('height', wrapRect.height);
+    treeSvg.setAttribute('viewBox', '0 0 ' + wrapRect.width + ' ' + wrapRect.height);
+    var rootRect = root.getBoundingClientRect();
+    var startX = rootRect.right - wrapRect.left;
+    var startY = rootRect.top - wrapRect.top + rootRect.height / 2;
+    var html = '';
+    labels.forEach(function(label){
+      var lr = label.getBoundingClientRect();
+      var endX = lr.left - wrapRect.left;
+      var endY = lr.top - wrapRect.top + lr.height / 2;
+      var midX = startX + (endX - startX) * 0.45;
+      html += '<path d="M' + startX + ',' + startY + ' C ' + midX + ',' + startY + ' ' + midX + ',' + endY + ' ' + endX + ',' + endY + '" fill="none" stroke="#9FB4BB" stroke-width="1.4"/>';
+    });
+    treeSvg.innerHTML = html;
+  }
+  if(treeWrap){
+    drawTree();
+    if(document.fonts && document.fonts.ready){ document.fonts.ready.then(drawTree); }
+    window.addEventListener('load', drawTree);
+    var treeResizeTimer;
+    window.addEventListener('resize', function(){
+      clearTimeout(treeResizeTimer);
+      treeResizeTimer = setTimeout(drawTree, 150);
+    });
+  }
+
+  var nextBtn = document.getElementById('nextProjectBtn');
+  function checkScroll(){
+    var scrollEl = document.scrollingElement || document.documentElement;
+    var nearBottom = (window.innerHeight + window.scrollY) >= (scrollEl.scrollHeight - 200);
+    nextBtn.classList.toggle('is-visible', nearBottom);
+  }
+  window.addEventListener('scroll', checkScroll, { passive: true });
+  checkScroll();
+
+  // video play/pause hint state
+  [['problemVideo','problemVideoWrap'], ['solutionVideo','solutionVideoWrap']].forEach(function(pair){
+    var vid = document.getElementById(pair[0]);
+    var vwrap = document.getElementById(pair[1]);
+    if(!vid || !vwrap) return;
+    vid.addEventListener('play', function(){ vwrap.classList.add('is-playing'); });
+    vid.addEventListener('pause', function(){ vwrap.classList.remove('is-playing'); });
+    vid.addEventListener('ended', function(){ vwrap.classList.remove('is-playing'); });
+  });
+
+  var lightbox = document.getElementById('genericLightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxCap = document.getElementById('lightboxCap');
+  function openLightbox(src, cap){
+    lightboxImg.src = src;
+    lightboxImg.alt = cap || '';
+    lightboxCap.textContent = cap || '';
+    lightbox.classList.add('open');
+    lightbox.setAttribute('aria-hidden','false');
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden','true');
+  }
+  document.querySelectorAll('[data-lightbox-src]').forEach(function(el){
+    el.addEventListener('click', function(){
+      openLightbox(el.getAttribute('data-lightbox-src'), el.getAttribute('data-lightbox-caption'));
+    });
+  });
+  lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+  });
+})();
+</script>
+
+</body>
+</html>

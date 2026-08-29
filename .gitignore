@@ -1,0 +1,20 @@
+.DS_Store
+.claude/
+
+# Source/working materials not used by the published site
+*.pdf
+ChatGPT Image*.png
+Screenshot*.png
+flatfeet_projectcard.png
+iot_projectcard.png
+passion_projectcard.png
+hero-.mov
+User testing.mp4
+ideation.mp4
+iterations.mp4
+research.mp4
+project.html
+placeholder_assets/
+sera-case-study final.html
+sera_assets/
+hm_svg_assets/

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Dhvani Patel</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo"><img src="logo.png" alt="Dhvani Patel"></a>
+  <div class="nav-links">
+    <a href="projects.html">Projects</a>
+    <a href="index.html">Home</a>
+    <a href="index.html#about">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <button class="nav-toggle" aria-label="Menu">☰</button>
+</nav>
+
+<section class="contact wrap">
+  <div>
+    <h1>Let's Talk!</h1>
+
+    <div class="contact-field">
+      <div class="contact-field-label">Email</div>
+      <div class="contact-field-value">dhvani.patel324@gmail.com</div>
+    </div>
+    <div class="contact-field">
+      <div class="contact-field-label">Phone</div>
+      <div class="contact-field-value">+91 7020501845</div>
+    </div>
+    <div class="contact-field">
+      <div class="contact-field-label">Based in</div>
+      <div class="contact-field-value">Mumbai, India</div>
+    </div>
+    <div class="contact-field">
+      <div class="contact-field-label">Socials</div>
+      <div class="contact-field-value">
+        <a href="https://www.instagram.com/dhvani.designs">Instagram</a><br>
+        <a href="https://www.linkedin.com/in/dhvani-patel-988242349">LinkedIn</a><br>
+        <a href="https://www.behance.net/dhvanipatel9">Behance</a>
+      </div>
+    </div>
+  </div>
+
+  <form class="contact-form">
+    <div class="field">
+      <label for="name">Name</label>
+      <input id="name" type="text">
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email">
+    </div>
+    <div class="field">
+      <label for="type">Project Type</label>
+      <select id="type">
+        <option>Select…</option>
+        <option>Digital Product Design</option>
+        <option>UX Research</option>
+        <option>Interaction Design</option>
+        <option>Branding</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="brief">Tell me about your project</label>
+      <textarea id="brief" rows="3" placeholder="A small brief about your firm"></textarea>
+    </div>
+    <button class="contact-submit" type="submit">Submit</button>
+    <p class="form-status" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-cta-label">Let's Connect</div>
+    <a class="footer-cta" href="contact.html">Have an idea or an opportunity? Let's talk.</a>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Dhvani Patel</div>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/dhvani-patel-988242349">LinkedIn</a>
+        <a href="https://www.instagram.com/dhvani.designs">Instagram</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- EmailJS: loaded only here (not script.js) since no other page sends mail.
+     Public key is safe to expose client-side by design — EmailJS scopes what
+     it can do by service/template, unlike an SMTP password or API secret. -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init({ publicKey: "n0m3AfC6crmSzc6QN" });
+</script>
+<script src="script.js"></script>
+</body>
+</html>
