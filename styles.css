@@ -161,8 +161,6 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
 .film-strip{
   position: relative;
   background: var(--color-bg-primary);
-  border-top: 1px solid rgba(240, 238, 231, 0.08);
-  border-bottom: 1px solid rgba(240, 238, 231, 0.08);
   padding: 14px 0;
   overflow: hidden;
 }
