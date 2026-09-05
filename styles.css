@@ -118,6 +118,11 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
   height: 100%;
   object-fit: cover;
   z-index: 0;
+  /* The video's baked-in background (#420000) is a shade off the site's
+     --color-bg-primary (#3B0000) — visible where it doesn't fully cover
+     (tablet/phone letterboxing) and at the seam with sections below.
+     Scaling brightness down matches the two exactly (66 * 0.894 ≈ 59). */
+  filter: brightness(0.894);
 }
 .hero-content{
   position: absolute;
