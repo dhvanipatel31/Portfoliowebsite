@@ -183,7 +183,32 @@ function initFlipCard(){
   const card = document.querySelector('.flip-card');
   const tilt = document.querySelector('.flip-tilt');
   const video = document.querySelector('.flip-character-video');
+  const front = card ? card.querySelector('.flip-front') : null;
   if(!card) return;
+
+  // Belt-and-suspenders against backface-visibility: video elements are
+  // commonly promoted to their own GPU compositor layer, and that layer
+  // doesn't reliably respect an ancestor's backface-visibility during an
+  // animated 3D transform in every browser — the front face (video + CTA)
+  // can flash or bleed through on top of the back face once flipped, even
+  // though backface-visibility: hidden is set correctly. Explicitly hiding
+  // the front face with `visibility`, timed to the .flip-card transform
+  // transition (900ms, see .flip-card in styles.css), closes that gap
+  // without touching the flip's own rotation visuals: hiding is deferred
+  // until the rotation finishes (so the front still visibly rotates away),
+  // while un-hiding happens immediately (so the front is there to rotate
+  // back into view).
+  let visibilityTimer = null;
+  function syncFrontVisibility(flipped){
+    clearTimeout(visibilityTimer);
+    if(!front) return;
+    if(flipped){
+      visibilityTimer = setTimeout(() => { front.style.visibility = 'hidden'; }, 900);
+    } else {
+      front.style.visibility = '';
+    }
+  }
+
   function toggle(){
     if(tilt){
       tilt.classList.remove('is-hovering');
@@ -192,6 +217,7 @@ function initFlipCard(){
     }
     const flipped = card.classList.toggle('is-flipped');
     card.setAttribute('aria-expanded', String(flipped));
+    syncFrontVisibility(flipped);
     if(video){
       if(flipped){
         video.pause();
