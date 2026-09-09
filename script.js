@@ -173,18 +173,16 @@ function initProjectStage(){
   window.addEventListener('resize', onResize);
 }
 
-// Set by initCharacterAnimation, used by initFlipCard's click handler so a
-// click can stop/reset the character's idle animation before flipping.
-let characterAnim = null;
-
 // About/flip: the whole card toggles on click (or Enter/Space, since it's
 // a div acting as a button), not just a small link — matches "click on
 // the card to flip it". Before flipping, the hover tilt (see initFlipTilt)
-// and the character idle animation (see initCharacterAnimation) are both
-// reset to neutral so the flip always starts from a squared-on, resting pose.
+// is reset to neutral so the flip always starts from a squared-on, resting
+// pose, and the looping character video is paused/resumed since she isn't
+// visible while the back face is showing.
 function initFlipCard(){
   const card = document.querySelector('.flip-card');
   const tilt = document.querySelector('.flip-tilt');
+  const video = document.querySelector('.flip-character-video');
   if(!card) return;
   function toggle(){
     if(tilt){
@@ -192,16 +190,15 @@ function initFlipCard(){
       tilt.style.transition = 'transform 0.5s cubic-bezier(.22,1,.36,1)';
       tilt.style.transform = 'rotateX(0deg) rotateY(0deg)';
     }
-    if(characterAnim){
-      characterAnim.stop();
-      characterAnim.resetToFirst();
-    }
     const flipped = card.classList.toggle('is-flipped');
     card.setAttribute('aria-expanded', String(flipped));
-    // Only resume the idle animation once the card has settled back to the
-    // front face — she isn't visible while the back face is showing.
-    if(characterAnim && !flipped){
-      setTimeout(() => characterAnim.start(), 900);
+    if(video){
+      if(flipped){
+        video.pause();
+      } else {
+        video.currentTime = 0;
+        video.play();
+      }
     }
   }
   card.addEventListener('click', toggle);
@@ -261,97 +258,23 @@ function initFlipTilt(){
   tilt.addEventListener('mouseleave', onLeave);
 }
 
-// Flip-card character idle animation: cycles the pixel-art character
-// through up to four expression frames (about-character-01..04.png) and
-// gives her a barely-there left/center/right sway — an ambient detail,
-// entirely independent of the cursor-driven card tilt above. Frame 1
-// (the existing character) always exists; frames 2–4 are optional and
-// picked up automatically the moment their files are added next to it —
-// nothing here needs to change when they arrive. Runs on mobile too
-// (it's time-based, not hover-based); pauses off-screen via
-// IntersectionObserver, and stays off entirely under prefers-reduced-motion.
-function initCharacterAnimation(){
-  const wrap = document.querySelector('.flip-character');
+// Flip-card character video: about-character-02.mp4 loops on its own via
+// the `loop` attribute. This just pauses it off-screen (via
+// IntersectionObserver) and under prefers-reduced-motion, since a looping
+// background video costs the same whether or not it's visible.
+function initCharacterVideo(){
   const scene = document.querySelector('.flip-scene');
-  if(!wrap || !scene) return;
-  const frameEls = Array.from(wrap.querySelectorAll('.flip-character-frame'));
-  if(!frameEls.length) return;
+  const video = document.querySelector('.flip-character-video');
+  if(!scene || !video) return;
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Frame 1 ships with the site, so it's always available. Frames 2-4 are
-  // added to `available` (in frame order) only once their image has
-  // actually loaded — a missing file just never joins the rotation.
-  const available = [];
-  function addAvailable(el){
-    if(available.includes(el)) return;
-    available.push(el);
-    available.sort((a, b) => Number(a.dataset.frame) - Number(b.dataset.frame));
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    video.pause();
+    return;
   }
-  frameEls.forEach((el) => {
-    if(el.dataset.frame === '1' || (el.complete && el.naturalWidth > 0)){
-      addAvailable(el);
-    } else {
-      el.addEventListener('load', () => addAvailable(el));
-      el.addEventListener('error', () => { el.style.display = 'none'; });
-    }
-  });
-
-  let index = 0;
-  let timer = null;
-  let running = false;
-
-  // Visibility is opacity-only (0 <-> 1, no transition) — with exactly one
-  // frame ever at opacity 1, stacking order is irrelevant, so this never
-  // touches z-index. It used to bump z-index on every swap (a leftover
-  // from an earlier crossfade version of this animation), but mutating
-  // z-index on a descendant of .flip-card's backface-hidden/preserve-3d
-  // stack forces WebKit to recompute that layer's stacking context on
-  // every single frame change — which is what surfaced as a flash of the
-  // patch background at the loop boundary. Dropping the z-index write
-  // leaves the frame swap as a single, cheap opacity toggle with nothing
-  // for the 3D-transformed ancestor to repaint around.
-  function showActive(){
-    const active = available[index] || frameEls[0];
-    frameEls.forEach((el) => el.classList.toggle('is-active', el === active));
-  }
-  showActive();
-
-  function scheduleNext(){
-    // ~1–1.2s per frame, lightly randomized so the cycle reads as a living
-    // gesture rather than a metronome.
-    timer = setTimeout(() => {
-      if(available.length > 1){
-        index = (index + 1) % available.length;
-        showActive();
-      }
-      scheduleNext();
-    }, 1000 + Math.random() * 200);
-  }
-
-  function start(){
-    if(running || reduceMotion) return;
-    running = true;
-    wrap.classList.add('is-idle');
-    scheduleNext();
-  }
-  function stop(){
-    running = false;
-    wrap.classList.remove('is-idle');
-    clearTimeout(timer);
-  }
-  function resetToFirst(){
-    index = 0;
-    showActive();
-  }
-
-  characterAnim = { start, stop, resetToFirst };
-
-  if(reduceMotion) return; // frame 1 only, no cycling, no sway — set above
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if(entry.isIntersecting) start(); else stop();
+      if(entry.isIntersecting) video.play(); else video.pause();
     });
   }, { threshold: 0.15 });
   observer.observe(scene);
@@ -436,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initProjectStage();
   initFlipCard();
   initFlipTilt();
-  initCharacterAnimation();
+  initCharacterVideo();
   initNavToggle();
   initContactForm();
 });

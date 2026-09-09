@@ -558,27 +558,15 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
   object-fit: cover;
   display: block;
 }
-/* Idle-animation sprite. The box is deliberately bigger than her hair's
-   tightest bounds (819,116)-(1484,786) of the 1556x980 source, expressed as
-   % of the front face) and filled with the backdrop's own flat background
-   colour (#FEF9F9, sampled from the source) — because frames 2+ are a
-   different pose/head-tilt than the one baked into the static backdrop
-   underneath, a box sized exactly to the silhouette would let slivers of
-   the ORIGINAL baked-in face peek out around the new pose. The opaque
-   patch fully masks that instead, so any pose swaps cleanly with no
-   ghosting, and the matching fill colour keeps its edges invisible against
-   the surrounding art. Frame 1 is a byte-for-byte copy of
-   about-illustration.png (about-character-01.png) cropped to this same
-   box, so it still sits flush over the backdrop with zero visible seam.
-   Frames 2-5 are separate transparent-background close-up exports; each
-   gets its own hand-fit width/left/top (see the per-[data-frame] rules)
-   from its source pixel dimensions and a manual read of where her face
-   sits in that file, so her eyes land at the same spot and apparent size
-   in the box no matter which frame is active. Script.js activates a frame
-   automatically the moment its image loads — dropping in further
-   about-character-NN.png files (with a matching HTML <img> and a
-   same-pattern position override here) extends the cycle with no other
-   changes needed. */
+/* Idle-animation video window. The box is deliberately bigger than her
+   hair's tightest bounds (819,116)-(1484,786) of the 1556x980 source,
+   expressed as % of the front face) and filled with the backdrop's own
+   flat background colour (#FEF9F9, sampled from the source) — the video's
+   pose/head-tilt differs from the one baked into the static backdrop
+   underneath, so a box sized exactly to the silhouette would let slivers
+   of the ORIGINAL baked-in face peek out around it. The opaque patch fully
+   masks that instead, and the matching fill colour keeps its edges
+   invisible against the surrounding art. */
 .flip-character{
   position: absolute;
   left: 52.63%;
@@ -588,108 +576,25 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
   overflow: hidden;
   background: #FEF9F9;
   pointer-events: none;
-  /* This box lives inside .flip-card's preserve-3d/backface-hidden stack
-     (see .flip-card, .flip-face). WebKit has a well-known bug where any
-     opacity/z-index mutation on a descendant of a backface-hidden, 3D-
-     transformed ancestor can force that layer to be momentarily
-     repainted from scratch — visible as a flash of the layer's blank
-     background between frames. Promoting this box to its own stable
-     compositing layer keeps it painted independently of the card's 3D
-     stack, so the frame swap below can never trigger that repaint. */
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   isolation: isolate;
 }
-/* Frame swap is an instant, un-transitioned opacity cut (0 <-> 1, no
-   animated middle state) — deliberately, not an oversight. A crossfade
-   holds two differently-posed frames at partial opacity at once, and
-   wherever their silhouettes don't overlap the flat patch colour shows
-   through underneath; on a slower device or a dropped frame that can read
-   as a visible blank flash between characters. A hard cut has no such
-   window: exactly one frame is ever visible, so there's nothing to show
-   through. Matches the pixel art's crisp style better anyway. */
-.flip-character-frame{
+/* about-character-00.mp4 is a straight animated (winking) export at the
+   same 768x512 crop/scale as the old about-character-02.png frame, so it
+   reuses that frame's exact position/size offsets from the old frame set. */
+.flip-character-video{
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  opacity: 0;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  will-change: opacity;
-}
-.flip-character-frame.is-active{ opacity: 1; }
-.flip-character-frame[data-frame="1"]{
-  left: -123.16%;
-  top: -17.31%;
-  right: auto;
-  bottom: auto;
-  width: 233.98%;
-  height: auto;
-  object-fit: initial;
-}
-/* Frames 2-5 are isolated, transparent-background character exports at
-   their own arbitrary crops/scales — unlike frame 1, they can't share one
-   set of offsets. Each gets its own scale (width%) and position (left%/
-   top%), calibrated by measuring her hair span at eye-level in each source
-   file (an automated, unambiguous metric — unlike guessing where "cheek" or
-   "face" edges are by eye) and scaling so that span renders at the same
-   width, at the same anchor point, as it does in frame 1. That keeps her
-   at a consistent size and position across every frame instead of jumping
-   between them. */
-.flip-character-frame[data-frame="2"]{
   left: 7.31%;
   top: 16.81%;
-  right: auto;
-  bottom: auto;
   width: 101.48%;
   height: auto;
   object-fit: initial;
-}
-.flip-character-frame[data-frame="3"]{
-  left: 5.22%;
-  top: 20.25%;
-  right: auto;
-  bottom: auto;
-  width: 104.22%;
-  height: auto;
-  object-fit: initial;
-}
-.flip-character-frame[data-frame="4"]{
-  left: -3.9%;
-  top: 19.46%;
-  right: auto;
-  bottom: auto;
-  width: 91.57%;
-  height: auto;
-  object-fit: initial;
-}
-.flip-character-frame[data-frame="5"]{
-  left: 18.2%;
-  top: 19.67%;
-  right: auto;
-  bottom: auto;
-  width: 65.61%;
-  height: auto;
-  object-fit: initial;
-}
-/* Extremely subtle idle sway — a living detail, not a swing. Only runs
-   while script.js has determined the card is on-screen and the user
-   hasn't asked for reduced motion (both gates live in initCharacterAnimation). */
-@keyframes character-idle-sway{
-  0%, 100%{ transform: translateX(0) rotate(0deg); }
-  25%{ transform: translateX(-1.5px) rotate(-0.4deg); }
-  75%{ transform: translateX(1.5px) rotate(0.4deg); }
-}
-.flip-character.is-idle{
-  animation: character-idle-sway 6s ease-in-out infinite;
+  display: block;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 .flip-back{
   background: var(--color-bg-deep);
