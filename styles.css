@@ -808,12 +808,20 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
 }
 .form-status.is-error{ color: var(--color-accent); }
 
-/* Desktop only (1200px+): nudges the "Projects / Scroll to explore" header
-   further down from the top of the sticky viewport, so it isn't sitting
-   right up against the Approach quote above it. Left untouched below
-   1200px — tablet/phone keep the original top: 48px. */
+/* Desktop only (1200px+): adds breathing room between the Approach quote
+   and the "Projects / Scroll to explore" header that follows it.
+   .stage-header sits inside .stage-sticky at a fixed `top`, which applies
+   both before AND after the section pins — bumping that top (as an
+   earlier pass here did) pulls the header away from the quote above but
+   pulls it just as close to the settled card grid below, since both gaps
+   share that one property. Padding on .approach instead adds pure
+   document-flow space before .project-stage even starts, so it only
+   affects the gap above the header — the header's own `top: 48px` (see
+   base .stage-header rule) stays untouched, preserving its gap to the
+   cards below. Left untouched below 1200px — tablet/phone keep the
+   original 48px bottom padding. */
 @media (min-width: 1200px){
-  .stage-header{ top: 96px; }
+  .approach{ padding-bottom: 120px; }
 }
 
 /* ---------- Responsive ---------- */
