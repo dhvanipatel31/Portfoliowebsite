@@ -418,6 +418,11 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
    cards (see .stage-card-title/.stage-card-name/.stage-card-desc) —
    reused as-is here rather than duplicated under a project-card-* name. */
 .project-card:hover .stage-card-title{ opacity: 1; }
+/* project-card is roughly double a homepage stage-card's size (grid cell
+   vs. a fixed 345px stack card), so the shared .stage-card-name/-desc
+   sizing reads too small here — scale both up to match. */
+.project-card .stage-card-name{ font-size: 32px; }
+.project-card .stage-card-desc{ font-size: 17px; max-width: 380px; }
 .project-card::before{
   content: "";
   position: absolute;
