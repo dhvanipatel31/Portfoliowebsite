@@ -323,107 +323,7 @@ function initNavToggle(){
   toggle.addEventListener('click', () => {
     const open = links.style.display === 'flex';
     links.style.display = open ? 'none' : 'flex';
-    // .nav-pill (see initNavActiveIndicator) can't measure its target
-    // link's position while .nav-links is display:none, so re-trigger
-    // that measurement now that the mobile menu has just opened/closed.
-    window.dispatchEvent(new Event('resize'));
   });
-}
-
-// Active-section pill: a sliding highlight behind whichever nav link
-// matches where the visitor actually is, so the nav itself answers "which
-// section am I in" instead of looking the same everywhere. Projects and
-// Contact are their own pages, so their match is static; Home and About
-// are two scroll-tracked regions of index.html rather than separate
-// destinations, so the pill follows scroll position between them there —
-// and disappears (rather than defaulting to one or the other) once
-// scrolled somewhere that's neither, e.g. the Projects stage or Approach.
-function initNavActiveIndicator(){
-  const navLinks = document.querySelector('.nav-links');
-  const pill = navLinks ? navLinks.querySelector('.nav-pill') : null;
-  const links = navLinks ? Array.from(navLinks.querySelectorAll('a[data-nav]')) : [];
-  if(!navLinks || !pill || !links.length) return;
-
-  let currentKey = null;
-
-  // Re-measures on every call rather than caching link positions once,
-  // since layout (breakpoint, mobile menu open/closed) can change them.
-  function apply(){
-    const link = currentKey ? links.find((a) => a.dataset.nav === currentKey) : null;
-    // offsetParent is null while .nav-links is display:none (mobile menu
-    // closed) — its links have no real position to measure yet, so just
-    // keep the pill hidden rather than sizing it to a stale/zeroed rect.
-    if(link && link.offsetParent !== null){
-      const linkRect = link.getBoundingClientRect();
-      const wrapRect = navLinks.getBoundingClientRect();
-      // The mobile dropdown stacks links in a column instead of the
-      // desktop row, so the pill needs to slide vertically (top/height)
-      // there instead of horizontally (left/width) — using left/width
-      // unconditionally left a full-height vertical sliver sitting under
-      // whichever link happened to be leftmost, spanning every row.
-      if(getComputedStyle(navLinks).flexDirection === 'column'){
-        pill.style.top = (linkRect.top - wrapRect.top) + 'px';
-        pill.style.height = linkRect.height + 'px';
-        pill.style.left = '6px';
-        pill.style.right = '6px';
-        pill.style.width = 'auto';
-        pill.style.bottom = 'auto';
-      } else {
-        pill.style.left = (linkRect.left - wrapRect.left) + 'px';
-        pill.style.width = linkRect.width + 'px';
-        pill.style.top = '6px';
-        pill.style.bottom = '6px';
-        pill.style.height = 'auto';
-        pill.style.right = 'auto';
-      }
-      pill.style.opacity = '1';
-    } else {
-      pill.style.opacity = '0';
-    }
-  }
-
-  function setActive(key){
-    currentKey = key;
-    apply();
-  }
-
-  window.addEventListener('resize', apply);
-  // Inter (the nav's font) loads via @import with font-display: swap, so
-  // the initial measurement can land mid-swap and be a few px off the
-  // fallback-font width it briefly rendered at — re-measure once the
-  // real font has actually finished loading.
-  if(document.fonts && document.fonts.ready){
-    document.fonts.ready.then(apply);
-  }
-
-  const path = window.location.pathname;
-  if(/projects\.html$/.test(path)){ setActive('projects'); return; }
-  if(/contact\.html$/.test(path)){ setActive('contact'); return; }
-
-  // Anything else is treated as the home page (index.html, or "/").
-  const hero = document.querySelector('.hero');
-  const about = document.getElementById('about');
-  let heroVisible = false;
-  let aboutVisible = false;
-
-  function updateFromScroll(){
-    if(aboutVisible) setActive('about');
-    else if(heroVisible) setActive('home');
-    else setActive(null);
-  }
-
-  if(hero){
-    new IntersectionObserver((entries) => {
-      heroVisible = entries[0].isIntersecting;
-      updateFromScroll();
-    }, { threshold: 0.5 }).observe(hero);
-  }
-  if(about){
-    new IntersectionObserver((entries) => {
-      aboutVisible = entries[0].isIntersecting;
-      updateFromScroll();
-    }, { threshold: 0.3 }).observe(about);
-  }
 }
 
 // Contact form: only present on contact.html, and only wired up if the
@@ -497,6 +397,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initFlipTilt();
   initCharacterVideo();
   initNavToggle();
-  initNavActiveIndicator();
   initContactForm();
 });

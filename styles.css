@@ -84,7 +84,6 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
 /* Just the link group reads as its own clickable surface — a translucent,
    blurred pill — separate from the logo, which stays plain. */
 .nav-links{
-  position: relative;
   display: flex;
   gap: 40px;
   font-size: 14px;
@@ -96,27 +95,8 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
   border: 1px solid rgba(240, 238, 231, 0.1);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
-.nav-links a{ position: relative; z-index: 1; opacity: .9; }
+.nav-links a{ opacity: .9; }
 .nav-links a:hover{ opacity: 1; }
-/* Active-section indicator: a pill that slides beneath whichever link
-   matches the current page/scroll position (see initNavActiveIndicator in
-   script.js), sized and positioned in JS to exactly match that link's own
-   box. On index.html, "Home" and "About" are two scroll-tracked regions of
-   the same page rather than separate pages, so the pill can also just sit
-   at opacity 0 — scrolled somewhere that's neither (Projects, Approach,
-   the footer) — rather than always pointing at one or the other. */
-.nav-pill{
-  position: absolute;
-  top: 6px;
-  bottom: 6px;
-  left: 0;
-  width: 0;
-  border-radius: 100px;
-  background: rgba(240, 238, 231, 0.14);
-  opacity: 0;
-  pointer-events: none;
-  transition: left 0.35s cubic-bezier(.22,1,.36,1), width 0.35s cubic-bezier(.22,1,.36,1), top 0.35s cubic-bezier(.22,1,.36,1), height 0.35s cubic-bezier(.22,1,.36,1), opacity 0.25s ease;
-}
 .nav-toggle{ display: none; font-size: 24px; }
 
 /* ---------- Hero ---------- */
