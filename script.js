@@ -41,6 +41,7 @@ function initProjectStage(){
   const cardsWrap = stage.querySelector('.stage-cards');
   const cards = Array.from(stage.querySelectorAll('.stage-card'));
   const cue = stage.querySelector('.stage-cue');
+  const word = stage.querySelector('.stage-word');
   const allProjects = stage.querySelector('.stage-all-projects');
   if(!cards.length) return;
 
@@ -115,6 +116,15 @@ function initProjectStage(){
       : (window.scrollY > stageDocTop ? 1 : 0);
 
     if(cue) cue.style.opacity = String(1 - clamp01(overall / 0.05));
+    // The giant "PROJECTS" watermark (see .stage-word) has no scroll-driven
+    // fade of its own in CSS, so at its base 0.06 opacity it sits behind
+    // the cards for the entire scroll — as cards scatter and rotate during
+    // the roll phase, gaps between them let patches of its letters show
+    // through inconsistently, reading as a flicker rather than a steady
+    // backdrop. Fading it out over the same brief window as the cue (it's
+    // only meant to be seen at rest, before scrolling starts) keeps it from
+    // ever showing behind the moving cards.
+    if(word) word.style.opacity = String(0.06 * (1 - clamp01(overall / 0.05)));
 
     // W advances 0 → N-1 across the roll phase, then holds — the deck
     // doesn't keep spinning once it's handed off to the resolve phase.
