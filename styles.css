@@ -793,6 +793,14 @@ button{ font: inherit; color: inherit; background: none; border: none; cursor: p
 }
 .form-status.is-error{ color: var(--color-accent); }
 
+/* Desktop only (1200px+): nudges the "Projects / Scroll to explore" header
+   further down from the top of the sticky viewport, so it isn't sitting
+   right up against the Approach quote above it. Left untouched below
+   1200px — tablet/phone keep the original top: 48px. */
+@media (min-width: 1200px){
+  .stage-header{ top: 96px; }
+}
+
 /* ---------- Responsive ---------- */
 /* Tablet: 810–1199px, measured on the live site */
 @media (max-width: 1199px) and (min-width: 810px){
